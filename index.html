@@ -649,6 +649,53 @@ canvas { display: block; margin: 0 auto; }
       </div>
     </div>
 
+    <!-- TRACK PAGE -->
+    <div class="page" id="page-track">
+      <div class="sh"><h2>Activity Tracker</h2></div>
+
+      <!-- Daily check-in -->
+      <div class="card" style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:12px">Daily Check-in</div>
+
+        <div class="fin-lbl">How was today?</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px" id="mood-btns">
+          <button class="btn btn-sm" data-mood="great" onclick="selectMood('great',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">🔥 Great</button>
+          <button class="btn btn-sm" data-mood="good" onclick="selectMood('good',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">✅ Good</button>
+          <button class="btn btn-sm" data-mood="okay" onclick="selectMood('okay',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">😐 Okay</button>
+          <button class="btn btn-sm" data-mood="tough" onclick="selectMood('tough',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">💪 Tough</button>
+        </div>
+
+        <div class="fin-lbl">Win of the day (one thing you're proud of)</div>
+        <input class="finput" id="win-input" placeholder="e.g. Hit the gym, didn't open Instagram, worked on LifeRPG">
+
+        <div class="fin-lbl">Notes (what did you do, what's on your mind)</div>
+        <textarea class="finput" id="notes-input" placeholder="Free form — what happened today, what you're working on, what's blocking you..." style="height:80px;resize:none;font-family:'DM Sans',sans-serif"></textarea>
+
+        <div class="fin-lbl">Goals in progress (check what you worked on today)</div>
+        <div id="goal-checklist" style="margin-bottom:12px"></div>
+
+        <button class="btn btn-gold btn-full" onclick="saveCheckin()">Save Today's Check-in</button>
+      </div>
+
+      <!-- App usage tracker -->
+      <div class="card" style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:10px">Session Activity</div>
+        <div id="session-stats" style="font-size:12px;color:var(--text2);line-height:1.8"></div>
+      </div>
+
+      <!-- Progress on goals -->
+      <div class="sh" style="margin-bottom:8px"><h2>Goal Progress</h2></div>
+      <div id="goals-progress"></div>
+
+      <!-- Past check-ins -->
+      <div class="sh" style="margin-bottom:8px"><h2>Recent Check-ins</h2></div>
+      <div id="past-checkins"></div>
+
+      <!-- Activity heatmap -->
+      <div class="sh" style="margin-bottom:8px"><h2>30-Day Activity</h2></div>
+      <div id="activity-heatmap" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:1rem"></div>
+    </div>
+
   </div><!-- end scroll area -->
 
   <!-- BOTTOM NAV -->
@@ -671,6 +718,9 @@ canvas { display: block; margin: 0 auto; }
     </button>
     <button class="nav-btn" data-page="intel" onclick="switchPage('intel', this)">
       <div class="ni">📡</div><div class="nl">INTEL</div>
+    </button>
+    <button class="nav-btn" data-page="track" onclick="switchPage('track', this)">
+      <div class="ni">📊</div><div class="nl">TRACK</div>
     </button>
   </nav>
 </div>
@@ -858,6 +908,7 @@ function toggleHabit(id, el) {
     S.streaks[id]=(S.streaks[id]||0)+1;
     if (S.streaks[id]>S.bestStreak) S.bestStreak=S.streaks[id];
     S.stats[h.stat]=Math.min(100,(S.stats[h.stat]||0)+1);
+    trackAction('habit_complete', h.name);
     Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,S.bossHP[k]-2); });
     shakeBosses();
     logEvent(h.icon,h.name+' ✓',`Streak: ${S.streaks[id]} day${S.streaks[id]!==1?'s':''}. All active bosses -2% HP.`,h.xp,'habit');
@@ -1290,7 +1341,221 @@ function updateDailyBadge() {
 // ═══════════════════════════════════════
 // UI
 // ═══════════════════════════════════════
-const PAGE_TITLES={home:'⚔ HJ QUEST',daily:'📋 DAILY GRIND',focus:'⏱ FOCUS',finance:'💰 WEALTH',quests:'🗺 QUESTS',intel:'📡 INTELLIGENCE'};
+const PAGE_TITLES={home:'⚔ HJ QUEST',daily:'📋 DAILY GRIND',focus:'⏱ FOCUS',finance:'💰 WEALTH',quests:'🗺 QUESTS',intel:'📡 INTELLIGENCE',track:'📊 TRACKER'};
+
+// ── SESSION TRACKING ──
+const SESSION = {
+  startTime: Date.now(),
+  tabTimes: {},
+  currentTab: 'home',
+  tabStart: Date.now(),
+  actions: [],
+};
+
+function trackTabSwitch(newTab) {
+  const elapsed = Math.floor((Date.now() - SESSION.tabStart) / 1000);
+  SESSION.tabTimes[SESSION.currentTab] = (SESSION.tabTimes[SESSION.currentTab] || 0) + elapsed;
+  SESSION.currentTab = newTab;
+  SESSION.tabStart = Date.now();
+}
+
+function trackAction(type, detail) {
+  SESSION.actions.push({ type, detail, time: new Date().toLocaleTimeString() });
+  logActivityToSupabase(type, detail);
+}
+
+async function logActivityToSupabase(actionType, actionDetail) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/activity_log`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ action_type: actionType, action_detail: actionDetail, tab_visited: SESSION.currentTab })
+    });
+  } catch(e) {}
+}
+
+// ── GOALS ──
+const GOALS = [
+  { id: 'msse', label: 'MSSE degree progress' },
+  { id: 'liferpg', label: 'Work on LifeRPG' },
+  { id: 'invest', label: 'Research investments' },
+  { id: 'biz', label: 'Business research' },
+  { id: 'fitness', label: 'Physical health' },
+  { id: 'family', label: 'Quality family time' },
+  { id: 'reading', label: 'Reading / learning' },
+];
+
+let selectedMood = '';
+let selectedGoals = new Set();
+
+function selectMood(mood, btn) {
+  selectedMood = mood;
+  document.querySelectorAll('#mood-btns button').forEach(b => {
+    b.style.borderColor = 'var(--text3)'; b.style.color = 'var(--text3)'; b.style.background = 'transparent';
+  });
+  btn.style.borderColor = 'var(--gold)'; btn.style.color = 'var(--gold)'; btn.style.background = 'rgba(201,168,76,0.1)';
+}
+
+function renderGoalChecklist() {
+  document.getElementById('goal-checklist').innerHTML = GOALS.map(g => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleGoal('${g.id}',this)">
+      <div id="gcheck-${g.id}" style="width:20px;height:20px;border-radius:4px;border:1.5px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all 0.15s"></div>
+      <span style="font-size:13px;color:var(--text)">${g.label}</span>
+    </div>`).join('');
+}
+
+function toggleGoal(id, row) {
+  const check = document.getElementById('gcheck-' + id);
+  if (selectedGoals.has(id)) {
+    selectedGoals.delete(id);
+    check.style.background = 'transparent'; check.style.borderColor = 'var(--text3)'; check.textContent = '';
+  } else {
+    selectedGoals.add(id);
+    check.style.background = 'var(--green)'; check.style.borderColor = 'var(--green)'; check.textContent = '✓';
+  }
+}
+
+async function saveCheckin() {
+  const win = document.getElementById('win-input').value.trim();
+  const notes = document.getElementById('notes-input').value.trim();
+  if (!selectedMood) { showToast('Select a mood first'); return; }
+
+  const totalTime = Math.floor((Date.now() - SESSION.startTime) / 1000);
+
+  const payload = {
+    activity_date: new Date().toISOString().slice(0, 10),
+    tab_visited: Object.keys(SESSION.tabTimes).join(', '),
+    time_spent_seconds: totalTime,
+    action_type: 'daily_checkin',
+    action_detail: JSON.stringify({ goals: [...selectedGoals] }),
+    mood: selectedMood,
+    win_of_day: win,
+    notes: notes,
+  };
+
+  try {
+    const resp = await fetch(`${SB_URL}/rest/v1/activity_log`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(payload)
+    });
+
+    if (resp.ok || resp.status === 201) {
+      addXP(10); save();
+      showToast('✓ Check-in saved +10 XP');
+      document.getElementById('win-input').value = '';
+      document.getElementById('notes-input').value = '';
+      selectedMood = ''; selectedGoals = new Set();
+      document.querySelectorAll('#mood-btns button').forEach(b => { b.style.borderColor='var(--text3)'; b.style.color='var(--text3)'; b.style.background='transparent'; });
+      renderGoalChecklist();
+      await loadPastCheckins();
+      trackAction('checkin', `mood:${selectedMood}, win:${win}`);
+    } else {
+      showToast('Error saving — check Supabase');
+    }
+  } catch(e) {
+    showToast('Network error');
+  }
+}
+
+async function loadPastCheckins() {
+  try {
+    const resp = await fetch(
+      `${SB_URL}/rest/v1/activity_log?action_type=eq.daily_checkin&order=created_at.desc&limit=7`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    if (!resp.ok) return;
+    const logs = await resp.json();
+
+    if (!logs.length) {
+      document.getElementById('past-checkins').innerHTML = '<div style="color:var(--text3);font-size:12px;padding:0.5rem 0">No check-ins yet. Save your first one above.</div>';
+      return;
+    }
+
+    const moodEmoji = { great:'🔥', good:'✅', okay:'😐', tough:'💪' };
+
+    document.getElementById('past-checkins').innerHTML = logs.map(l => {
+      let goals = [];
+      try { goals = JSON.parse(l.action_detail || '{}').goals || []; } catch(e) {}
+      const mins = Math.floor((l.time_spent_seconds || 0) / 60);
+      return `<div style="padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:16px">${moodEmoji[l.mood] || '📋'}</span>
+          <span style="font-size:12px;font-weight:600;color:var(--text)">${new Date(l.activity_date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${mins > 0 ? mins + ' min in app' : ''}</span>
+        </div>
+        ${l.win_of_day ? `<div style="font-size:12px;color:var(--green);margin-bottom:4px">🏆 ${l.win_of_day}</div>` : ''}
+        ${l.notes ? `<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px">${l.notes}</div>` : ''}
+        ${goals.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${goals.map(g => `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(201,168,76,0.1);color:var(--gold)">${GOALS.find(x=>x.id===g)?.label||g}</span>`).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function loadActivityHeatmap() {
+  try {
+    const resp = await fetch(
+      `${SB_URL}/rest/v1/activity_log?action_type=eq.daily_checkin&order=activity_date.desc&limit=30`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    if (!resp.ok) return;
+    const logs = await resp.json();
+    const dateMap = {};
+    logs.forEach(l => { dateMap[l.activity_date] = l.mood; });
+
+    const moodColor = { great:'#2ECC71', good:'#27AE60', okay:'#C9A84C', tough:'#E67E22' };
+    const today = new Date();
+    let html = '';
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const mood = dateMap[key];
+      const color = moodColor[mood] || 'var(--bg4)';
+      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      html += `<div title="${label}${mood ? ' — '+mood : ''}" style="width:20px;height:20px;border-radius:3px;background:${color};border:1px solid var(--border)"></div>`;
+    }
+    document.getElementById('activity-heatmap').innerHTML = html;
+    document.getElementById('activity-heatmap').insertAdjacentHTML('afterend',
+      '<div style="font-size:10px;color:var(--text3);display:flex;gap:10px;margin-bottom:1rem"><span>🟢 Great/Good</span><span>🟡 Okay</span><span>🟠 Tough</span><span>⬛ No check-in</span></div>');
+  } catch(e) {}
+}
+
+function renderSessionStats() {
+  const totalSec = Math.floor((Date.now() - SESSION.startTime) / 1000);
+  const mins = Math.floor(totalSec / 60);
+  const secs = totalSec % 60;
+  const tabStats = Object.entries(SESSION.tabTimes)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tab, sec]) => `${tab}: ${Math.floor(sec/60)}m ${sec%60}s`)
+    .join(' · ');
+
+  document.getElementById('session-stats').innerHTML = `
+    <div style="margin-bottom:6px">Session time: <span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${mins}m ${secs}s</span></div>
+    <div style="margin-bottom:6px">Tabs visited: <span style="color:var(--text)">${Object.keys(SESSION.tabTimes).join(', ') || SESSION.currentTab}</span></div>
+    <div style="margin-bottom:6px">Time per tab: <span style="color:var(--text2);font-size:11px">${tabStats || 'still counting...'}</span></div>
+    <div>Actions logged: <span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${SESSION.actions.length}</span></div>`;
+}
+
+function renderGoalsProgress() {
+  const total = Object.keys(S.habits).length;
+  const thisWeek = Object.values(S.weekLog).slice(-7).reduce((a,b)=>a+b,0);
+  document.getElementById('goals-progress').innerHTML = `
+    <div style="padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Current Character</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Level</span><span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${getLvl().n} — ${getLvl().t}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Total XP</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.xp}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Quests completed</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.completedQuests.length} / ${QUESTS.length}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Habits this week</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${thisWeek}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Best streak</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.bestStreak} days</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)"><span>Net worth tracked</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">$${calcNW().nw.toLocaleString()}</span></div>
+    </div>
+    ${GOALS.map(g => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--gold-dim);flex-shrink:0"></div>
+        <span style="font-size:13px;color:var(--text);flex:1">${g.label}</span>
+        <span style="font-size:10px;color:var(--text3)">tap in check-in</span>
+      </div>`).join('')}`;
+}
 
 // ── SUPABASE CONFIG ──
 const SB_URL = 'https://rcxuqpdlzrdzamrgwtjs.supabase.co';
@@ -1490,6 +1755,7 @@ async function logInvestmentAction() {
 function round2(n) { return Math.round(n * 100) / 100; }
 
 function switchPage(name, btn) {
+  trackTabSwitch(name);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -1497,6 +1763,13 @@ function switchPage(name, btn) {
   document.getElementById('page-title').textContent=PAGE_TITLES[name]||'HJ QUEST';
   document.getElementById('scroll-area').scrollTop=0;
   if (name === 'intel') loadIntel();
+  else if (name === 'track') {
+    renderGoalChecklist();
+    renderGoalsProgress();
+    renderSessionStats();
+    loadPastCheckins();
+    loadActivityHeatmap();
+  }
   else renderAll();
 }
 
