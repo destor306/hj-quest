@@ -593,6 +593,56 @@ canvas { display: block; margin: 0 auto; }
           <div class="sh" style="margin-bottom:8px"><h2>Full Brief</h2></div>
           <pre id="intel-full" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);white-space:pre-wrap;line-height:1.6"></pre>
         </div>
+
+        <!-- Investment Suggestions -->
+        <div id="intel-invest-section" style="display:none">
+          <div class="sh" style="margin-bottom:8px"><h2>💡 Investment Suggestions</h2></div>
+
+          <div class="card" style="margin-bottom:10px;border-color:rgba(46,204,113,0.3)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--green);text-transform:uppercase;margin-bottom:10px">Long-Term (10+ years)</div>
+            <div id="intel-longterm"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:10px;border-color:rgba(52,152,219,0.3)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#5DADE2;text-transform:uppercase;margin-bottom:10px">Short-Term Moves</div>
+            <div id="intel-shortterm"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:10px;border-color:rgba(201,168,76,0.4)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:10px">How to Split Your Budget This Month</div>
+            <div id="intel-breakdown"></div>
+            <div id="intel-summary" style="font-size:12px;color:var(--text2);margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid var(--border)"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:10px;border-color:rgba(231,76,60,0.3)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#E74C3C;text-transform:uppercase;margin-bottom:10px">Avoid Right Now</div>
+            <div id="intel-avoid"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:8px">The Bigger Picture</div>
+            <div id="intel-path" style="font-size:13px;color:var(--text);line-height:1.65"></div>
+          </div>
+
+          <!-- Log investment action -->
+          <div class="card" style="margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:10px">Log an Investment Action</div>
+            <input class="finput" id="inv-ticker" placeholder="Ticker (e.g. VOO)">
+            <select class="fselect" id="inv-action" style="margin-bottom:8px">
+              <option value="researched">Researched</option>
+              <option value="bought">Bought</option>
+              <option value="watching">Watching</option>
+              <option value="passed">Passed on it</option>
+            </select>
+            <input class="finput" id="inv-amount" type="number" placeholder="Amount $ (optional)">
+            <input class="finput" id="inv-notes" placeholder="Notes (why you made this decision)">
+            <button class="btn btn-gold btn-full" onclick="logInvestmentAction()">Log Decision</button>
+          </div>
+
+          <!-- Past investment logs -->
+          <div class="sh" style="margin-bottom:8px"><h2>Your Investment Journal</h2></div>
+          <div id="intel-invest-log"></div>
+        </div>
         <div style="text-align:center;margin-bottom:1rem">
           <button class="btn btn-gold btn-sm" onclick="loadIntel()">↻ Refresh</button>
         </div>
@@ -1256,17 +1306,11 @@ async function loadIntel() {
       `${SB_URL}/rest/v1/briefs?order=created_at.desc&limit=1`,
       { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
     );
-
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
-
-    if (!data || data.length === 0) {
-      throw new Error('No briefs found yet. Run the Python script first:\npython weekly_brief.py');
-    }
+    if (!data || data.length === 0) throw new Error('No briefs yet. Run the Python script first:\npython weekly_brief.py');
 
     const brief = data[0];
-
-    // Populate week/date
     const created = new Date(brief.created_at);
     document.getElementById('intel-week').textContent = `Week ${brief.week_number} Brief`;
     document.getElementById('intel-date').textContent = created.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -1276,43 +1320,41 @@ async function loadIntel() {
     if (brief.stock_data) {
       const stocks = typeof brief.stock_data === 'string' ? JSON.parse(brief.stock_data) : brief.stock_data;
       stockHtml = Object.entries(stocks).map(([ticker, d]) => {
-        if (d.error) return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="font-family:'JetBrains Mono',monospace;color:var(--text2)">${ticker}</span><span style="color:var(--text3)">unavailable</span></div>`;
+        if (d.error) return '';
         const up = d.change_pct >= 0;
+        const fromLow = d.pct_from_52w_low;
+        const signal = fromLow < 15 ? '🟢' : fromLow > 80 ? '🔴' : '🟡';
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);font-weight:600">${ticker}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);font-weight:600">${ticker} ${signal}</span>
           <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold)">$${d.price}</span>
           <span style="font-size:11px;color:${up?'var(--green)':'var(--red)'}">${up?'▲':'▼'}${Math.abs(d.change_pct)}%</span>
         </div>`;
       }).join('');
+      stockHtml += `<div style="font-size:10px;color:var(--text3);margin-top:6px">🟢 near 52w low (buy zone) · 🟡 mid-range · 🔴 near 52w high</div>`;
     }
     document.getElementById('intel-stocks').innerHTML = stockHtml || '<div style="color:var(--text3);font-size:12px">No stock data</div>';
 
-    // Extract AI analysis from brief_text
+    // AI analysis
     const briefText = brief.brief_text || '';
-    const analysisMatch = briefText.match(/AI ANALYSIS\n([\s\S]*?)(?=\n━━━|\n={3}|THIS WEEK)/);
-    const analysis = analysisMatch ? analysisMatch[1].trim() : 'Run the script with your Anthropic API key to get AI analysis.';
-    document.getElementById('intel-analysis').textContent = analysis;
+    const analysisMatch = briefText.match(/AI ANALYSIS\n([\s\S]*?)(?=\n={3}|\nINVESTMENT|\nTHIS WEEK)/);
+    document.getElementById('intel-analysis').textContent = analysisMatch ? analysisMatch[1].trim() : 'Add ANTHROPIC_API_KEY to get AI analysis.';
 
-    // Article
+    // Weekly content
     document.getElementById('intel-article-title').textContent = brief.article_title || '';
-    const articleUrl = document.getElementById('intel-article-url');
-    articleUrl.textContent = brief.article_url || '';
-    articleUrl.href = brief.article_url || '#';
-
-    // Recipe
+    const aUrl = document.getElementById('intel-article-url');
+    aUrl.textContent = brief.article_url || ''; aUrl.href = brief.article_url || '#';
     document.getElementById('intel-recipe-name').textContent = brief.recipe_name || '';
-    const recipeUrl = document.getElementById('intel-recipe-url');
-    recipeUrl.textContent = brief.recipe_url || '';
-    recipeUrl.href = brief.recipe_url || '#';
-
-    // Hustle
+    const rUrl = document.getElementById('intel-recipe-url');
+    rUrl.textContent = brief.recipe_url || ''; rUrl.href = brief.recipe_url || '#';
     document.getElementById('intel-hustle-task').textContent = brief.hustle_task || '';
-    const hustleUrl = document.getElementById('intel-hustle-url');
-    hustleUrl.textContent = brief.hustle_url || '(open HJ Quest and build)';
-    hustleUrl.href = brief.hustle_url || '#';
+    const hUrl = document.getElementById('intel-hustle-url');
+    hUrl.textContent = brief.hustle_url || '(open HJ Quest and build)'; hUrl.href = brief.hustle_url || '#';
 
-    // Full brief
     document.getElementById('intel-full').textContent = briefText;
+
+    // Load investment suggestions
+    await loadInvestmentSuggestions();
+    await loadInvestmentLog();
 
     document.getElementById('intel-loading').style.display = 'none';
     document.getElementById('intel-content').style.display = 'block';
@@ -1323,6 +1365,129 @@ async function loadIntel() {
     document.getElementById('intel-error').style.display = 'block';
   }
 }
+
+async function loadInvestmentSuggestions() {
+  try {
+    // Fetch latest week's suggestions from investment_log
+    const resp = await fetch(
+      `${SB_URL}/rest/v1/investment_log?order=created_at.desc&limit=20`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    if (!resp.ok) return;
+    const logs = await resp.json();
+    if (!logs || logs.length === 0) return;
+
+    // Split by term
+    const longTerm = logs.filter(l => l.term === 'long');
+    const shortTerm = logs.filter(l => l.term === 'short');
+
+    const renderSuggestion = (s) => `
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:700">${s.ticker}</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(46,204,113,0.1);color:var(--green)">${s.action}</span>
+          ${s.amount ? `<span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)">$${s.amount}/mo</span>` : ''}
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5">${s.notes || ''}</div>
+        ${s.price_at_time ? `<div style="font-size:10px;color:var(--text3);margin-top:3px">Price when suggested: $${s.price_at_time}</div>` : ''}
+      </div>`;
+
+    if (longTerm.length) document.getElementById('intel-longterm').innerHTML = longTerm.map(renderSuggestion).join('');
+    if (shortTerm.length) document.getElementById('intel-shortterm').innerHTML = shortTerm.map(renderSuggestion).join('');
+
+    // Extract budget breakdown from full brief text
+    const fullBrief = document.getElementById('intel-full').textContent;
+    const breakdownMatch = fullBrief.match(/HOW TO SPLIT[\s\S]*?\n([\s\S]*?)(?=\nWHAT TO AVOID|\n={3})/);
+    if (breakdownMatch) {
+      document.getElementById('intel-breakdown').innerHTML = `<pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);white-space:pre-wrap">${breakdownMatch[1].trim()}</pre>`;
+    }
+    const avoidMatch = fullBrief.match(/WHAT TO AVOID[\s\S]*?\n([\s\S]*?)(?=\nTHE BIGGER|\n={3})/);
+    if (avoidMatch) {
+      document.getElementById('intel-avoid').innerHTML = `<pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);white-space:pre-wrap">${avoidMatch[1].trim()}</pre>`;
+    }
+    const pathMatch = fullBrief.match(/THE BIGGER PICTURE\n([\s\S]*?)(?=\n={3}|\nTHIS WEEK)/);
+    if (pathMatch) document.getElementById('intel-path').textContent = pathMatch[1].trim();
+
+    document.getElementById('intel-invest-section').style.display = 'block';
+  } catch (e) {
+    console.log('Investment suggestions load error:', e);
+  }
+}
+
+async function loadInvestmentLog() {
+  try {
+    const resp = await fetch(
+      `${SB_URL}/rest/v1/investment_log?order=created_at.desc&limit=10`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    if (!resp.ok) return;
+    const logs = await resp.json();
+
+    const userLogs = logs.filter(l => l.term === 'user'); // user-logged actions
+    if (!userLogs.length) {
+      document.getElementById('intel-invest-log').innerHTML = `<div style="color:var(--text3);font-size:12px;padding:0.5rem 0">No investment decisions logged yet. Use the form above to track what you research and buy.</div>`;
+      return;
+    }
+
+    document.getElementById('intel-invest-log').innerHTML = userLogs.map(l => `
+      <div style="padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:700">${l.ticker}</span>
+          <span style="font-size:11px;font-weight:600;color:var(--text2)">${l.action}</span>
+          <span style="font-size:10px;color:var(--text3)">${new Date(l.created_at).toLocaleDateString()}</span>
+        </div>
+        ${l.notes ? `<div style="font-size:12px;color:var(--text2)">${l.notes}</div>` : ''}
+        ${l.amount ? `<div style="font-size:11px;color:var(--green);margin-top:3px">$${l.amount} invested</div>` : ''}
+        ${l.price_at_time ? `<div style="font-size:10px;color:var(--text3)">at $${l.price_at_time}</div>` : ''}
+      </div>`).join('');
+  } catch (e) {
+    console.log('Investment log error:', e);
+  }
+}
+
+async function logInvestmentAction() {
+  const ticker = document.getElementById('inv-ticker').value.trim().toUpperCase();
+  const action = document.getElementById('inv-action').value;
+  const amount = parseFloat(document.getElementById('inv-amount').value) || 0;
+  const notes = document.getElementById('inv-notes').value.trim();
+
+  if (!ticker) { showToast('Enter a ticker symbol'); return; }
+
+  // Get current price from stocks if available
+  let price = 0;
+  try {
+    const resp = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`,
+      { headers: {'User-Agent': 'HJQuest/1.0'} });
+    if (resp.ok) {
+      const data = await resp.json();
+      price = data?.chart?.result?.[0]?.meta?.regularMarketPrice || 0;
+    }
+  } catch(e) {}
+
+  const payload = { ticker, action, price_at_time: round2(price), notes, amount, term: 'user' };
+
+  try {
+    const resp = await fetch(`${SB_URL}/rest/v1/investment_log`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok || resp.status === 201) {
+      showToast(`✓ ${ticker} — ${action} logged`);
+      document.getElementById('inv-ticker').value = '';
+      document.getElementById('inv-amount').value = '';
+      document.getElementById('inv-notes').value = '';
+      addXP(15); save();
+      await loadInvestmentLog();
+    } else {
+      showToast('Error saving — check Supabase connection');
+    }
+  } catch(e) {
+    showToast('Network error — try again');
+  }
+}
+
+function round2(n) { return Math.round(n * 100) / 100; }
 
 function switchPage(name, btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
