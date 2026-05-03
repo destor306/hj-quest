@@ -5,97 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="HJ Quest">
 <meta name="theme-color" content="#080B0E">
 <title>HJ Quest</title>
-<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gold: #C9A84C;
-  --gold2: #E8C96A;
-  --golddim: #7A612A;
-  --bg: #080B0E;
-  --bg2: #0D1117;
-  --bg3: #131A22;
-  --bg4: #1A2332;
-  --border: rgba(201,168,76,0.15);
-  --border2: rgba(201,168,76,0.32);
-  --text: #D4CDBA;
-  --text2: #8A8070;
-  --text3: #4A4438;
-  --green: #2ECC71;
-  --red: #E74C3C;
-  --orange: #E67E22;
-  --blue: #3498DB;
-  --purple: #9B59B6;
-  --teal: #1ABC9C;
-  --nav-h: 64px;
-  --safe-b: env(safe-area-inset-bottom, 0px);
+  --gold: #C9A84C; --gold2: #E8C96A; --golddim: #7A612A;
+  --bg: #080B0E; --bg2: #0D1117; --bg3: #131A22; --bg4: #1A2332;
+  --border: rgba(201,168,76,0.15); --border2: rgba(201,168,76,0.32);
+  --text: #D4CDBA; --text2: #8A8070; --text3: #4A4438;
+  --green: #2ECC71; --red: #E74C3C; --orange: #E67E22;
+  --blue: #3498DB; --purple: #9B59B6; --teal: #1ABC9C;
+  --nav-h: 64px; --safe-b: env(safe-area-inset-bottom, 0px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: 'DM Sans', sans-serif; font-size: 15px;
-  overscroll-behavior: none;
-}
-body::before {
-  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.07) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 90%, rgba(52,152,219,0.04) 0%, transparent 50%);
-}
+              radial-gradient(ellipse at 80% 90%, rgba(52,152,219,0.04) 0%, transparent 50%); }
 
 /* APP SHELL */
 .app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; position: relative; z-index: 1; }
 
 /* TOP BAR */
-.topbar {
-  flex-shrink: 0; height: 54px; display: flex; align-items: center; justify-content: space-between;
+.topbar { flex-shrink: 0; height: 54px; display: flex; align-items: center; justify-content: space-between;
   padding: 0 1rem; background: rgba(8,11,14,0.96); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding-top: env(safe-area-inset-top, 0px);
-}
+  border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top, 0px); }
 .topbar-title { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--gold); letter-spacing: 0.12em; }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-.lvl-chip {
-  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);
-  padding: 3px 9px; border: 1px solid var(--border2); border-radius: 20px;
-  background: rgba(201,168,76,0.08);
-}
-.xp-mini { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+.lvl-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);
+  padding: 3px 9px; border: 1px solid var(--border2); border-radius: 20px; background: rgba(201,168,76,0.08); }
 
-/* SCROLL AREA */
-.scroll-area {
-  flex: 1; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 8px);
-}
+/* SCROLL */
+.scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 8px); }
 .page { display: none; padding: 1rem; animation: fadeIn 0.2s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* BOTTOM NAV */
-.bottom-nav {
-  flex-shrink: 0; position: fixed; bottom: 0; left: 0; right: 0;
-  height: calc(var(--nav-h) + var(--safe-b));
-  padding-bottom: var(--safe-b);
-  background: rgba(8,11,14,0.98); backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border);
-  display: flex; align-items: flex-start; z-index: 100;
-}
-.nav-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+.bottom-nav { flex-shrink: 0; position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
+  background: rgba(8,11,14,0.98); backdrop-filter: blur(16px); border-top: 1px solid var(--border);
+  display: flex; align-items: flex-start; z-index: 100; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 3px; height: var(--nav-h); cursor: pointer; border: none; background: none;
-  color: var(--text3); transition: color 0.15s; padding: 0; position: relative;
-}
+  color: var(--text3); transition: color 0.15s; padding: 0; }
 .nav-btn.active { color: var(--gold); }
 .nav-btn .ni { font-size: 20px; line-height: 1; }
 .nav-btn .nl { font-size: 9px; font-weight: 600; letter-spacing: 0.04em; }
-.nav-btn .badge {
-  position: absolute; top: 6px; right: calc(50% - 18px);
-  width: 16px; height: 16px; border-radius: 50%; background: var(--red);
-  font-size: 9px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center;
-}
+.nav-btn .nbadge { position: absolute; top: 6px; right: calc(50% - 18px); width: 16px; height: 16px;
+  border-radius: 50%; background: var(--red); font-size: 9px; font-weight: 700; color: white;
+  display: flex; align-items: center; justify-content: center; }
 
 /* SECTION HEADER */
 .sh { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
@@ -106,626 +67,463 @@ body::before {
 .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; position: relative; overflow: hidden; }
 .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--golddim), transparent); opacity: 0.7; }
 
-/* HERO CARD */
-.hero-card {
-  background: var(--bg3); border: 1px solid var(--border2); border-radius: 14px;
-  padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden;
-}
-.hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+/* ONBOARDING */
+.onboard { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: flex; flex-direction: column; overflow-y: auto; }
+.onboard.hidden { display: none; }
+.ob-step { display: none; flex-direction: column; padding: 2rem 1.25rem; min-height: 100vh; min-height: 100dvh; }
+.ob-step.active { display: flex; }
+.ob-logo { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 2rem; }
+.ob-progress { display: flex; gap: 6px; margin-bottom: 2rem; }
+.ob-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--bg4); }
+.ob-dot.done { background: var(--gold); }
+.ob-dot.active { background: var(--gold2); }
+.ob-title { font-family: 'Cinzel', serif; font-size: 24px; font-weight: 900; color: var(--gold); line-height: 1.2; margin-bottom: 8px; }
+.ob-sub { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 2rem; }
+.ob-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; flex: 1; }
+.ob-option { padding: 16px; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 12px;
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 14px; }
+.ob-option:active { transform: scale(0.98); }
+.ob-option.selected { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+.ob-option-icon { font-size: 28px; flex-shrink: 0; }
+.ob-option-text { flex: 1; }
+.ob-option-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.ob-option-desc { font-size: 12px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+.ob-option.selected .ob-option-title { color: var(--gold); }
+.ob-input { width: 100%; background: var(--bg4); border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text);
+  outline: none; margin-bottom: 12px; }
+.ob-input:focus { border-color: var(--gold); }
+.ob-input::placeholder { color: var(--text3); }
+.ob-select { width: 100%; background: var(--bg4); border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text);
+  outline: none; cursor: pointer; margin-bottom: 12px; }
+.ob-next { width: 100%; padding: 16px; border-radius: 12px; background: var(--gold);
+  color: var(--bg); font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700;
+  letter-spacing: 0.08em; cursor: pointer; border: none; transition: all 0.15s; margin-top: auto; }
+.ob-next:active { transform: scale(0.97); }
+.ob-next:disabled { opacity: 0.4; cursor: not-allowed; }
+.ob-back { background: none; border: none; color: var(--text3); font-size: 13px; cursor: pointer; padding: 8px 0; margin-bottom: 1rem; }
+
+/* ROADMAP */
+.roadmap-step { display: flex; gap: 12px; margin-bottom: 16px; position: relative; }
+.roadmap-step::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: -16px; width: 1px; background: var(--border); }
+.roadmap-step:last-child::before { display: none; }
+.roadmap-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg4); border: 1.5px solid var(--golddim);
+  display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+.roadmap-num.done { background: var(--green); border-color: var(--green); }
+.roadmap-text { font-size: 13px; color: var(--text2); padding-top: 6px; line-height: 1.5; }
+
+/* QUEST CARDS */
+.quest-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; user-select: none; }
+.quest-card:active { transform: scale(0.98); background: var(--bg4); }
+.quest-card.done { border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.04); opacity: 0.7; }
+.quest-card.done .quest-title { text-decoration: line-through; color: var(--text3); }
+.quest-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+.quest-check { width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid var(--text3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; transition: all 0.15s; }
+.quest-card.done .quest-check { background: var(--green); border-color: var(--green); }
+.quest-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; line-height: 1.3; }
+.quest-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin: 6px 0; padding-left: 34px; }
+.quest-footer { display: flex; align-items: center; gap: 8px; padding-left: 34px; }
+.quest-xp { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); }
+.quest-diff { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+.diff-easy { background: rgba(46,204,113,0.1); color: var(--green); }
+.diff-medium { background: rgba(201,168,76,0.1); color: var(--gold); }
+.diff-hard { background: rgba(231,76,60,0.1); color: var(--red); }
+.quest-url { font-size: 10px; color: var(--teal); text-decoration: none; }
+
+/* MILESTONE CARDS */
+.milestone-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; }
+.milestone-card.unlocked { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.05); }
+.milestone-icon { font-size: 24px; flex-shrink: 0; }
+.milestone-body { flex: 1; }
+.milestone-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.milestone-card.unlocked .milestone-title { color: var(--gold); }
+.milestone-xp { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); margin-top: 2px; }
+.milestone-locked { font-size: 18px; color: var(--text3); }
+
+/* PROGRESS BAR */
+.prog-wrap { margin-bottom: 1.25rem; }
+.prog-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.prog-lbl { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+.prog-val { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); }
+.prog-bg { height: 8px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--golddim), var(--gold2)); border-radius: 4px; transition: width 0.7s; }
+
+/* HERO */
+.hero-card { background: var(--bg3); border: 1px solid var(--border2); border-radius: 14px;
+  padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent); }
 .hero-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.hero-avatar { width: 52px; height: 52px; border-radius: 10px; background: var(--bg4); border: 1.5px solid var(--golddim); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
-.hero-info { flex: 1; min-width: 0; }
+.hero-avatar { width: 52px; height: 52px; border-radius: 10px; background: var(--bg4);
+  border: 1.5px solid var(--golddim); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.hero-info { flex: 1; }
 .hero-name { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 900; color: var(--gold); }
-.hero-role { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.hero-lvl { text-align: right; flex-shrink: 0; }
+.hero-goal { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.hero-lvl { text-align: right; }
 .lvl-big { font-family: 'Cinzel', serif; font-size: 30px; font-weight: 900; color: var(--gold); line-height: 1; }
 .lvl-name { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--golddim); }
 
-/* XP BAR */
-.xp-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.xp-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3); }
-.xp-bg { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
-.xp-fill { height: 100%; background: linear-gradient(90deg, var(--golddim), var(--gold2)); border-radius: 3px; transition: width 0.7s cubic-bezier(.4,0,.2,1); }
+/* BADGES */
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 1rem; }
+.badge-item { background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 6px; text-align: center; }
+.badge-item.earned { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.06); }
+.badge-item.locked { opacity: 0.3; filter: grayscale(1); }
+.badge-icon { font-size: 22px; margin-bottom: 4px; }
+.badge-name { font-size: 9px; color: var(--text3); line-height: 1.2; }
+.badge-item.earned .badge-name { color: var(--gold); }
 
-/* STAT ROW */
-.stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.stat-n { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); width: 74px; flex-shrink: 0; }
-.stat-bg { flex: 1; height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-.stat-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
-.stat-v { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text2); width: 24px; text-align: right; }
+/* COMMUNITY */
+.community-post { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px; margin-bottom: 8px; }
+.post-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.post-icon { font-size: 20px; }
+.post-meta { flex: 1; }
+.post-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.post-goal { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.post-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.post-footer { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.post-likes { font-size: 12px; color: var(--text3); cursor: pointer; }
 
-/* MINI STATS */
+/* SHARE WIN FORM */
+.share-form { background: var(--bg4); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+
+/* BUTTONS */
+.btn { padding: 10px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid; transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+.btn:active { transform: scale(0.96); }
+.btn-gold { background: transparent; border-color: var(--gold); color: var(--gold); }
+.btn-gold:hover { background: rgba(201,168,76,0.1); }
+.btn-green { background: transparent; border-color: var(--green); color: var(--green); }
+.btn-sm { padding: 7px 12px; font-size: 12px; min-height: 36px; border-radius: 6px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* MINI CARDS */
 .mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .mini-c { background: var(--bg4); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
 .mini-l { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
 .mini-v { font-family: 'JetBrains Mono', monospace; font-size: 17px; color: var(--gold); font-weight: 500; }
 
-/* NARRATOR */
-.narrator {
-  background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--gold);
-  border-radius: 12px; padding: 14px; margin-bottom: 12px;
-}
-.narrator-mode { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; color: var(--golddim); text-transform: uppercase; margin-bottom: 6px; }
-.narrator-text { font-size: 13px; color: var(--text); line-height: 1.65; min-height: 40px; }
-.narrator-text.typing::after { content: '▋'; animation: blink 0.9s infinite; color: var(--gold); }
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
-.narrator-btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-
-/* HABIT ROWS */
-.habit-item {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
-  padding: 14px; display: flex; align-items: center; gap: 12px;
-  margin-bottom: 8px; cursor: pointer; transition: all 0.15s; user-select: none;
-  -webkit-user-select: none; min-height: 64px;
-}
-.habit-item:active { transform: scale(0.97); background: var(--bg4); }
-.habit-item.done { border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.04); }
-.hchk {
-  width: 26px; height: 26px; border-radius: 6px; border: 1.5px solid var(--text3);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  font-size: 14px; transition: all 0.2s;
-}
-.habit-item.done .hchk { background: var(--green); border-color: var(--green); }
-.hbody { flex: 1; min-width: 0; }
-.hname { font-size: 14px; font-weight: 500; color: var(--text); }
-.habit-item.done .hname { color: var(--text3); text-decoration: line-through; }
-.hmeta { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.hright { text-align: right; flex-shrink: 0; }
-.hxp { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); }
-.hstr { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.hstr.hot { color: var(--orange); }
-
-/* WEEK DOTS */
-.week-dots { display: flex; gap: 4px; margin-bottom: 14px; }
-.wd { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.wdc {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--bg4); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3);
-}
-.wdc.today { border-color: var(--gold); color: var(--gold); }
-.wdc.win { background: rgba(46,204,113,0.15); border-color: rgba(46,204,113,0.4); color: var(--green); }
-.wdc.partial { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.25); color: var(--golddim); }
-.wdl { font-size: 8px; color: var(--text3); }
-
-/* SCREEN TIME INPUT */
-.st-input-wrap { margin-bottom: 14px; }
-.st-label { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-.st-slider-row { display: flex; align-items: center; gap: 12px; }
-.st-slider { flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg4); outline: none; }
-.st-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
-  background: var(--gold); cursor: pointer; border: 2px solid var(--bg);
-}
-.st-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--gold); min-width: 52px; text-align: right; }
-.st-reaction { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; }
-.st-reaction.good { background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.2); color: var(--green); }
-.st-reaction.ok { background: rgba(201,168,76,0.06); border: 1px solid var(--border); color: var(--text2); }
-.st-reaction.bad { background: rgba(231,76,60,0.07); border: 1px solid rgba(231,76,60,0.2); color: #E74C3C; }
-.st-reaction.ugly { background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.3); color: #C0392B; }
-
-/* FOCUS TIMER */
-.timer-display {
-  text-align: center; padding: 20px 0; cursor: default;
-}
-.timer-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 16px; }
-.timer-ring-bg { position: absolute; inset: 0; border-radius: 50%; border: 4px solid var(--bg4); }
-.timer-ring-fill {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 4px solid var(--gold); border-color: var(--gold) transparent transparent transparent;
-  transition: transform 0.5s;
-}
-.timer-canvas { width: 160px; height: 160px; }
-.timer-num { font-family: 'Cinzel', serif; font-size: 40px; font-weight: 900; color: var(--gold); line-height: 1; }
-.timer-lbl { font-size: 11px; color: var(--text3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
-.timer-task { font-size: 13px; color: var(--text2); margin-top: 8px; }
-.timer-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
-.timer-presets { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
-
-/* BOSS HP */
-.boss-item { background: var(--bg3); border: 1px solid rgba(192,57,43,0.3); border-radius: 12px; padding: 14px; margin-bottom: 10px; position: relative; overflow: hidden; }
-.boss-item::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.06) 0%, transparent 60%); pointer-events: none; }
-.boss-item.semi { border-color: rgba(155,89,182,0.3); }
-.boss-item.semi::before { background: radial-gradient(ellipse at 50% 0%, rgba(155,89,182,0.06) 0%, transparent 60%); }
-.boss-item.defeated { opacity: 0.4; }
-.boss-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.boss-icon { font-size: 24px; }
-.boss-name { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 900; }
-.bn-red { color: #E74C3C; } .bn-purple { color: #BB8FCE; } .bn-teal { color: #48C9B0; } .bn-text { color: var(--text); }
-.boss-type { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; }
-.boss-desc { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
-.hp-bg { height: 8px; background: var(--bg4); border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
-.hp-fill { height: 100%; background: linear-gradient(90deg, #7B241C, #C0392B); border-radius: 4px; transition: width 0.8s; }
-.hp-fill.semi { background: linear-gradient(90deg, #6C3483, #8E44AD); }
-.hp-meta { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
-
-/* FINANCE */
-.nw-big { background: var(--bg4); border: 1px solid var(--border2); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px; }
-.nw-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-.nw-num { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 900; color: var(--gold); }
-.asset-row {
-  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
-}
-.asset-icon { font-size: 20px; flex-shrink: 0; }
-.asset-body { flex: 1; min-width: 0; }
-.asset-name { font-size: 13px; font-weight: 500; color: var(--text); }
-.asset-type { font-size: 10px; color: var(--text3); }
-.asset-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-.asset-val.pos { color: var(--gold); }
-.asset-val.neg { color: var(--red); }
-.finput { width: 100%; background: var(--bg4); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); outline: none; margin-bottom: 8px; -webkit-appearance: none; }
-.finput:focus { border-color: var(--gold); }
-.finput::placeholder { color: var(--text3); }
-.fselect { width: 100%; background: var(--bg4); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; margin-bottom: 8px; cursor: pointer; }
-.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* EVENTS */
-.event-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
-.event-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.event-icon { font-size: 15px; }
-.event-title { font-size: 12px; font-weight: 600; color: var(--gold); flex: 1; }
-.event-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3); }
-.event-body { font-size: 11px; color: var(--text2); line-height: 1.5; }
-.event-xp { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); margin-top: 4px; }
-
-/* QUEST ITEMS */
-.quest-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
-.quest-item.done { opacity: 0.5; }
-.qbadge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 2px 7px; border-radius: 4px; display: inline-block; margin-bottom: 7px; }
-.qb-s { background: rgba(52,152,219,0.15); color: #5DADE2; }
-.qb-m { background: rgba(155,89,182,0.15); color: #BB8FCE; }
-.qb-l { background: rgba(201,168,76,0.15); color: var(--gold); }
-.qname { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 5px; }
-.qdesc { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
-.qreward { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); margin-bottom: 10px; }
-
-/* BUTTONS */
-.btn {
-  padding: 10px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif;
-  font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid;
-  transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
-  min-height: 44px; letter-spacing: 0.02em;
-}
-.btn:active { transform: scale(0.96); }
-.btn-gold { background: transparent; border-color: var(--gold); color: var(--gold); }
-.btn-gold:hover, .btn-gold:active { background: rgba(201,168,76,0.12); }
-.btn-green { background: transparent; border-color: var(--green); color: var(--green); }
-.btn-red { background: transparent; border-color: rgba(192,57,43,0.6); color: #E74C3C; }
-.btn-sm { padding: 7px 12px; font-size: 12px; min-height: 36px; border-radius: 6px; }
-.btn-full { width: 100%; justify-content: center; }
-.btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-/* XP FLYUP ANIMATION */
-.xp-flyup {
-  position: fixed; pointer-events: none; z-index: 9999;
-  font-family: 'Cinzel', serif; font-size: 20px; font-weight: 900; color: var(--gold2);
-  text-shadow: 0 0 10px rgba(201,168,76,0.5);
-  animation: flyup 1.2s ease-out forwards;
-}
-@keyframes flyup {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
-}
-
-/* BOSS SHAKE */
-@keyframes shake {
-  0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
-}
-.shaking { animation: shake 0.4s ease; }
-
-/* PERFECT DAY FLASH */
-.perfect-flash {
-  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+/* XP FLYUP */
+.xp-flyup { position: fixed; pointer-events: none; z-index: 9999; font-family: 'Cinzel', serif;
+  font-size: 20px; font-weight: 900; color: var(--gold2); text-shadow: 0 0 10px rgba(201,168,76,0.5);
+  animation: flyup 1.2s ease-out forwards; }
+@keyframes flyup { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.4)} }
+.perfect-flash { position: fixed; inset: 0; z-index: 9998; pointer-events: none;
   background: radial-gradient(ellipse at center, rgba(201,168,76,0.3) 0%, transparent 70%);
-  animation: flashout 1.5s ease-out forwards;
-}
+  animation: flashout 1.5s ease-out forwards; }
 @keyframes flashout { 0%{opacity:1} 100%{opacity:0} }
 
-/* STREAK FIRE */
-@keyframes fireflicker { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
-
 /* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 500; display: none; align-items: flex-end; justify-content: center; padding: 0; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 500;
+  display: none; align-items: flex-end; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal-sheet {
-  background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px 20px 0 0;
+.modal-sheet { background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px 20px 0 0;
   padding: 24px 20px; width: 100%; max-width: 480px; text-align: center;
-  animation: slideUp 0.25s ease; padding-bottom: calc(24px + var(--safe-b));
-}
+  animation: slideUp 0.25s ease; padding-bottom: calc(24px + var(--safe-b)); }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .modal-icon { font-size: 48px; margin-bottom: 12px; }
 .modal-title { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); margin-bottom: 8px; }
 .modal-body { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
-.modal-reward { background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.22); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); text-align: left; }
+.modal-reward { background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.22); border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); text-align: left; }
 
 /* TOAST */
-.toast {
-  position: fixed; top: calc(54px + env(safe-area-inset-top, 0px) + 8px); left: 50%;
+.toast { position: fixed; top: calc(54px + env(safe-area-inset-top, 0px) + 8px); left: 50%;
   transform: translateX(-50%) translateY(-20px); opacity: 0;
   background: var(--bg3); border: 1px solid var(--golddim); border-radius: 20px;
-  padding: 8px 18px; font-size: 12px; font-weight: 600; color: var(--gold);
-  z-index: 600; pointer-events: none; white-space: nowrap;
-  transition: all 0.3s; font-family: 'Cinzel', serif; letter-spacing: 0.06em;
-  max-width: 85vw; overflow: hidden; text-overflow: ellipsis;
-}
+  padding: 8px 18px; font-size: 12px; font-weight: 600; color: var(--gold); z-index: 600;
+  pointer-events: none; white-space: nowrap; transition: all 0.3s; font-family: 'Cinzel', serif;
+  letter-spacing: 0.06em; max-width: 85vw; overflow: hidden; text-overflow: ellipsis; }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-/* INSTALL BANNER */
-.install-banner {
-  background: rgba(201,168,76,0.08); border: 1px solid var(--border2); border-radius: 10px;
-  padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer;
-}
-.install-banner.hidden { display: none; }
-.install-text { flex: 1; font-size: 12px; color: var(--text2); line-height: 1.4; }
-.install-text strong { color: var(--gold); }
-
-/* SCROLLBAR */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-/* CANVAS TIMER */
-canvas { display: block; margin: 0 auto; }
 </style>
 </head>
 <body>
 
-<div class="app">
-  <!-- TOP BAR -->
+<!-- ═══════════════════════════════════════
+     ONBOARDING FLOW
+     ═══════════════════════════════════════ -->
+<div class="onboard" id="onboard">
+
+  <!-- Step 1: Welcome -->
+  <div class="ob-step active" id="ob-step-1">
+    <div class="ob-logo">⚔ HJ QUEST</div>
+    <div class="ob-progress">
+      <div class="ob-dot active"></div><div class="ob-dot"></div>
+      <div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+    </div>
+    <div style="font-size:48px;margin-bottom:1rem">🌱</div>
+    <div class="ob-title">Your life,<br>gamified.</div>
+    <div class="ob-sub">Tell us your real goal. We'll build your personalized roadmap, daily quests, and track your progress — every single day.</div>
+    <div class="ob-options">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">
+          ✓ Personalized quests based on your goal<br>
+          ✓ XP, levels, badges for real milestones<br>
+          ✓ Weekly AI intelligence brief<br>
+          ✓ Track progress toward what actually matters
+        </div>
+      </div>
+    </div>
+    <button class="ob-next" onclick="obNext(2)">Start My Journey →</button>
+  </div>
+
+  <!-- Step 2: Goal Category -->
+  <div class="ob-step" id="ob-step-2">
+    <div class="ob-logo">⚔ HJ QUEST</div>
+    <div class="ob-progress">
+      <div class="ob-dot done"></div><div class="ob-dot active"></div>
+      <div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+    </div>
+    <button class="ob-back" onclick="obNext(1)">← Back</button>
+    <div class="ob-title">What's your<br>main goal?</div>
+    <div class="ob-sub">Pick the one that matters most right now.</div>
+    <div class="ob-options">
+      <div class="ob-option" data-cat="financial" onclick="selectCat(this)">
+        <div class="ob-option-icon">💰</div>
+        <div class="ob-option-text">
+          <div class="ob-option-title">Financial</div>
+          <div class="ob-option-desc">Pay off debt, save money, invest, build wealth</div>
+        </div>
+      </div>
+      <div class="ob-option" data-cat="career" onclick="selectCat(this)">
+        <div class="ob-option-icon">💼</div>
+        <div class="ob-option-text">
+          <div class="ob-option-title">Career</div>
+          <div class="ob-option-desc">Get a job, change careers, get promoted, start a business</div>
+        </div>
+      </div>
+      <div class="ob-option" data-cat="health" onclick="selectCat(this)">
+        <div class="ob-option-icon">💪</div>
+        <div class="ob-option-text">
+          <div class="ob-option-title">Health</div>
+          <div class="ob-option-desc">Lose weight, build habits, sleep better, reduce screen time</div>
+        </div>
+      </div>
+      <div class="ob-option" data-cat="education" onclick="selectCat(this)">
+        <div class="ob-option-icon">🎓</div>
+        <div class="ob-option-text">
+          <div class="ob-option-title">Education</div>
+          <div class="ob-option-desc">Complete a degree, learn a skill, get certified</div>
+        </div>
+      </div>
+      <div class="ob-option" data-cat="life" onclick="selectCat(this)">
+        <div class="ob-option-icon">⚡</div>
+        <div class="ob-option-text">
+          <div class="ob-option-title">Life</div>
+          <div class="ob-option-desc">Build habits, improve relationships, find purpose</div>
+        </div>
+      </div>
+    </div>
+    <button class="ob-next" id="ob-next-2" onclick="obNext(3)" disabled>Choose a Goal →</button>
+  </div>
+
+  <!-- Step 3: Specific Goal -->
+  <div class="ob-step" id="ob-step-3">
+    <div class="ob-logo">⚔ HJ QUEST</div>
+    <div class="ob-progress">
+      <div class="ob-dot done"></div><div class="ob-dot done"></div>
+      <div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+    </div>
+    <button class="ob-back" onclick="obNext(2)">← Back</button>
+    <div class="ob-title">What specifically<br>do you want?</div>
+    <div class="ob-sub">Pick the closest match. We'll personalize it for your exact situation.</div>
+    <div class="ob-options" id="specific-goals"></div>
+    <button class="ob-next" id="ob-next-3" onclick="obNext(4)" disabled>Select Your Goal →</button>
+  </div>
+
+  <!-- Step 4: Your Details -->
+  <div class="ob-step" id="ob-step-4">
+    <div class="ob-logo">⚔ HJ QUEST</div>
+    <div class="ob-progress">
+      <div class="ob-dot done"></div><div class="ob-dot done"></div>
+      <div class="ob-dot done"></div><div class="ob-dot active"></div><div class="ob-dot"></div>
+    </div>
+    <button class="ob-back" onclick="obNext(3)">← Back</button>
+    <div class="ob-title">Tell us more<br>about you</div>
+    <div class="ob-sub">This helps us personalize your quests and roadmap.</div>
+    <div class="ob-options" style="gap:0">
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Your name</div>
+        <input class="ob-input" id="ob-name" placeholder="First name" oninput="checkStep4()">
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Describe your goal in one sentence</div>
+        <input class="ob-input" id="ob-goal-detail" placeholder="e.g. I want to pay off my $5,000 Visa card in 12 months" oninput="checkStep4()">
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Timeline</div>
+        <select class="ob-select" id="ob-timeline">
+          <option value="3">3 months — sprint</option>
+          <option value="6" selected>6 months — focused</option>
+          <option value="12">1 year — steady</option>
+          <option value="24">2 years — long game</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Monthly income (optional, helps with financial goals)</div>
+        <input class="ob-input" id="ob-income" type="number" placeholder="e.g. 4000" oninput="checkStep4()">
+      </div>
+    </div>
+    <button class="ob-next" id="ob-next-4" onclick="obNext(5)" disabled>Build My Roadmap →</button>
+  </div>
+
+  <!-- Step 5: Roadmap reveal -->
+  <div class="ob-step" id="ob-step-5">
+    <div class="ob-logo">⚔ HJ QUEST</div>
+    <div class="ob-progress">
+      <div class="ob-dot done"></div><div class="ob-dot done"></div>
+      <div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot active"></div>
+    </div>
+    <div style="font-size:36px;text-align:center;margin-bottom:1rem" id="ob-goal-icon">💰</div>
+    <div class="ob-title" id="ob-goal-title">Your Roadmap</div>
+    <div class="ob-sub" id="ob-goal-desc">Here's your personalized 5-step path to your goal.</div>
+    <div id="ob-roadmap" style="margin-bottom:1.5rem;flex:1"></div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:1.5rem">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Your first quest awaits</div>
+      <div id="ob-first-quest" style="font-size:13px;color:var(--text);font-weight:500"></div>
+    </div>
+    <button class="ob-next" onclick="finishOnboarding()">Start My Journey ⚔</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN APP
+     ═══════════════════════════════════════ -->
+<div class="app" id="main-app" style="display:none">
+
   <div class="topbar">
     <div class="topbar-title" id="page-title">⚔ HJ QUEST</div>
-    <div class="topbar-right">
-      <div class="xp-mini" id="xp-mini">0 XP</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)" id="xp-mini">0 XP</div>
       <div class="lvl-chip" id="lvl-chip">LVL 1</div>
     </div>
   </div>
 
-  <!-- SCROLL AREA -->
   <div class="scroll-area" id="scroll-area">
 
-    <!-- HOME PAGE -->
+    <!-- HOME -->
     <div class="page active" id="page-home">
-
-      <!-- Install banner -->
-      <div class="install-banner" id="install-banner" onclick="triggerInstall()">
-        <div style="font-size:24px">📲</div>
-        <div class="install-text"><strong>Add to Home Screen</strong> for the full app experience — works offline, feels native.</div>
-        <div style="font-size:18px;color:var(--text3)">→</div>
-      </div>
-
-      <!-- Hero -->
       <div class="hero-card">
         <div class="hero-top">
           <div class="hero-avatar" id="hero-emoji">🌱</div>
           <div class="hero-info">
-            <div class="hero-name">HYUNJUN YOO</div>
-            <div class="hero-role">Court Analyst II · <span style="color:var(--gold)" id="salary-lbl">$61K</span> · Tallahassee</div>
+            <div class="hero-name" id="hero-name">LOADING...</div>
+            <div class="hero-goal" id="hero-goal-label">Setting up your journey...</div>
           </div>
           <div class="hero-lvl">
             <div class="lvl-big" id="lvl-big">1</div>
             <div class="lvl-name" id="lvl-name">SEED</div>
           </div>
         </div>
-        <div class="xp-row">
-          <span class="xp-lbl" id="xp-lbl2">LVL 1 PROGRESS</span>
-          <span class="xp-lbl" id="xp-right">0 / 500</span>
-        </div>
-        <div class="xp-bg"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
-      </div>
-
-      <!-- Narrator -->
-      <div class="narrator" id="narrator">
-        <div class="narrator-mode" id="narrator-mode">Daily Briefing</div>
-        <div class="narrator-text typing" id="narrator-text">Loading your mission briefing...</div>
-        <div class="narrator-btns">
-          <button class="btn btn-gold btn-sm" onclick="refreshNarrator()">↻ New</button>
-          <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" onclick="cycleNarratorMode()">Switch tone</button>
+        <div class="prog-wrap" style="margin-bottom:0">
+          <div class="prog-row">
+            <span class="prog-lbl" id="goal-prog-lbl">GOAL PROGRESS</span>
+            <span class="prog-val" id="goal-prog-val">0%</span>
+          </div>
+          <div class="prog-bg"><div class="prog-fill" id="goal-prog-fill" style="width:0%"></div></div>
         </div>
       </div>
 
-      <!-- Mini stats -->
+      <!-- XP bar -->
+      <div class="prog-wrap">
+        <div class="prog-row">
+          <span class="prog-lbl" id="xp-lbl">LEVEL PROGRESS</span>
+          <span class="prog-val" id="xp-val-home">0 / 500 XP</span>
+        </div>
+        <div class="prog-bg"><div class="prog-fill" id="xp-fill-home" style="width:0%"></div></div>
+      </div>
+
       <div class="mini-row">
-        <div class="mini-c"><div class="mini-l">Net Worth</div><div class="mini-v" id="m-nw">$0</div></div>
-        <div class="mini-c"><div class="mini-l">Income</div><div class="mini-v" id="m-income">$61K</div></div>
-        <div class="mini-c"><div class="mini-l">Quests</div><div class="mini-v" id="m-quests">0</div></div>
-        <div class="mini-c"><div class="mini-l">Best Streak</div><div class="mini-v" id="m-streak">0d</div></div>
+        <div class="mini-c"><div class="mini-l">Quests Done</div><div class="mini-v" id="m-quests">0</div></div>
+        <div class="mini-c"><div class="mini-l">Day Streak</div><div class="mini-v" id="m-streak">0</div></div>
+        <div class="mini-c"><div class="mini-l">Badges</div><div class="mini-v" id="m-badges">0</div></div>
+        <div class="mini-c"><div class="mini-l">Days Left</div><div class="mini-v" id="m-days">—</div></div>
       </div>
 
-      <!-- Stats -->
-      <div class="sh"><h2>Stats</h2></div>
-      <div class="card" id="stats-card"></div>
+      <div class="sh"><h2>Today's Quests</h2></div>
+      <div id="home-quests"></div>
+      <div style="text-align:center;margin-top:8px">
+        <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" onclick="switchPage('quests',document.querySelector('[data-page=quests]'))">See all quests →</button>
+      </div>
 
-      <!-- Week -->
-      <div class="sh"><h2>This Week</h2></div>
-      <div class="week-dots" id="home-week"></div>
-
-      <!-- Boss previews -->
-      <div class="sh"><h2>Boss Status</h2></div>
-      <div id="home-boss-preview"></div>
+      <div class="sh" style="margin-top:1rem"><h2>Your Roadmap</h2></div>
+      <div id="home-roadmap"></div>
     </div>
 
-    <!-- DAILY PAGE -->
-    <div class="page" id="page-daily">
-      <div class="sh"><h2>Daily Grind</h2></div>
-      <div class="week-dots" id="daily-week"></div>
-
-      <!-- Screen time check-in -->
-      <div class="card" style="margin-bottom:12px">
-        <div class="sh" style="margin-bottom:10px"><h2>Screen Time Today</h2></div>
-        <div class="st-label">How many hours on your phone today? (Check StayFree)</div>
-        <div class="st-slider-row">
-          <input type="range" class="st-slider" id="st-slider" min="0" max="12" step="0.5" value="0" oninput="updateScreenTime(this.value)">
-          <div class="st-val" id="st-val">0h</div>
-        </div>
-        <div id="st-reaction" class="st-reaction ok" style="display:none"></div>
-        <button class="btn btn-gold btn-sm" style="margin-top:10px;width:100%;justify-content:center" onclick="logScreenTime()">Log Screen Time</button>
-      </div>
-
-      <!-- Habits -->
-      <div class="sh"><h2>Habits</h2></div>
-      <div id="habits-container"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--text3)">
-        <span id="habit-count-lbl">0 / 5 done</span>
-        <span style="color:var(--gold)">All 5 → +50 XP ⚡</span>
-      </div>
-    </div>
-
-    <!-- FOCUS PAGE -->
-    <div class="page" id="page-focus">
-      <div class="sh"><h2>Focus Timer</h2></div>
-      <div class="card">
-        <div class="timer-presets">
-          <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" onclick="setTimer(25)">25 min</button>
-          <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" onclick="setTimer(50)">50 min</button>
-          <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" onclick="setTimer(90)">90 min</button>
-        </div>
-        <div class="timer-display">
-          <canvas id="timer-canvas" width="160" height="160"></canvas>
-          <div class="timer-num" id="timer-num">25:00</div>
-          <div class="timer-lbl" id="timer-lbl">SELECT A BLOCK</div>
-          <div class="timer-task" id="timer-task"></div>
-        </div>
-        <div style="margin-bottom:12px">
-          <input class="finput" id="focus-task-input" placeholder="What are you working on? (e.g. LifeRPG research)" style="margin-bottom:0">
-        </div>
-        <div class="timer-btns">
-          <button class="btn btn-gold" id="timer-start-btn" onclick="startTimer()">▶ Start</button>
-          <button class="btn btn-red" id="timer-stop-btn" onclick="stopTimer()" style="display:none">■ Abandon</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:10px">
-        <div class="sh" style="margin-bottom:8px"><h2>Focus Stats</h2></div>
-        <div class="mini-row">
-          <div class="mini-c"><div class="mini-l">Completed</div><div class="mini-v" id="focus-done">0</div></div>
-          <div class="mini-c"><div class="mini-l">Abandoned</div><div class="mini-v" id="focus-abandoned" style="color:var(--red)">0</div></div>
-        </div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.5">
-          Completing a 25-min block = <span style="color:var(--gold)">+40 XP</span> · Completing a 50-min = <span style="color:var(--gold)">+90 XP</span><br>
-          Abandoning early = <span style="color:var(--red)">-10 XP</span> · Boss HP regens
-        </div>
-      </div>
-    </div>
-
-    <!-- FINANCE PAGE -->
-    <div class="page" id="page-finance">
-      <div class="nw-big">
-        <div class="nw-label">Net Worth</div>
-        <div class="nw-num" id="fin-nw">$0</div>
-      </div>
-      <div class="mini-row" id="fin-summary"></div>
-
-      <!-- Add asset -->
-      <div class="card" style="margin-bottom:12px">
-        <div class="sh" style="margin-bottom:10px"><h2>Log Asset / Debt</h2></div>
-        <input class="finput" id="fa-name" placeholder="Name (e.g. Fidelity brokerage)">
-        <div class="frow">
-          <select class="fselect" id="fa-type">
-            <option value="investment">📈 Investment</option>
-            <option value="savings">🏦 Savings</option>
-            <option value="retirement">💰 Retirement</option>
-            <option value="property">🏠 Property</option>
-            <option value="vehicle">🚗 Vehicle</option>
-            <option value="business">🏢 Business</option>
-            <option value="debt">⛔ Debt</option>
-          </select>
-          <input class="finput" id="fa-val" type="number" placeholder="Value $" style="margin-bottom:0">
-        </div>
-        <button class="btn btn-gold btn-full" style="margin-top:8px" onclick="addAsset()">Log Entry</button>
-      </div>
-
-      <div class="sh"><h2>Portfolio</h2></div>
-      <div id="assets-list"></div>
-    </div>
-
-    <!-- QUESTS/BOSSES PAGE -->
+    <!-- QUESTS -->
     <div class="page" id="page-quests">
-      <div style="display:flex;gap:6px;margin-bottom:14px" id="qfilter-bar">
-        <button class="btn btn-sm btn-gold" data-f="quests">Quests</button>
-        <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" data-f="bosses">Bosses</button>
-        <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" data-f="events">Events</button>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="quest-filter">
+        <button class="btn btn-sm btn-gold" data-f="today">Today</button>
+        <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" data-f="all">All Quests</button>
+        <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3)" data-f="done">Completed</button>
       </div>
-      <div id="qb-content"></div>
+      <div id="quests-container"></div>
     </div>
 
-    <!-- INTEL PAGE -->
-    <div class="page" id="page-intel">
-      <div class="sh"><h2>Weekly Intelligence Brief</h2></div>
-      <div id="intel-loading" style="text-align:center;padding:2rem;color:var(--text3)">
-        <div style="font-size:32px;margin-bottom:12px">📡</div>
-        <div style="font-size:13px">Loading latest brief...</div>
+    <!-- PROGRESS -->
+    <div class="page" id="page-progress">
+      <div class="sh"><h2>Milestones</h2></div>
+      <div id="milestones-list"></div>
+      <div class="sh" style="margin-top:1rem"><h2>Badges Earned</h2></div>
+      <div class="badge-grid" id="badges-grid"></div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div class="page" id="page-community">
+      <div class="share-form">
+        <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.08em;margin-bottom:10px">Share a Win</div>
+        <input class="ob-input" id="win-title" placeholder="What did you accomplish?" style="margin-bottom:8px">
+        <textarea class="ob-input" id="win-body" placeholder="Tell your story briefly — help someone else on the same path..." style="height:70px;resize:none;margin-bottom:8px"></textarea>
+        <button class="btn btn-gold btn-full btn-sm" onclick="shareWin()">Share Anonymously</button>
       </div>
-      <div id="intel-error" style="display:none;text-align:center;padding:2rem">
-        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
-        <div style="font-size:13px;color:var(--text3)" id="intel-error-msg">Could not load brief. Run the Python script first.</div>
-        <button class="btn btn-gold btn-sm" style="margin-top:12px" onclick="loadIntel()">Retry</button>
+      <div class="sh"><h2>Community Wins</h2></div>
+      <div id="community-feed"><div style="color:var(--text3);font-size:12px;padding:1rem 0;text-align:center">Loading stories...</div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">Character</div>
+        <div id="profile-stats"></div>
       </div>
-      <div id="intel-content" style="display:none">
-        <div class="card" style="margin-bottom:10px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px" id="intel-week"></div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)" id="intel-date"></div>
-        </div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="sh" style="margin-bottom:8px"><h2>Watchlist</h2></div>
-          <div id="intel-stocks"></div>
-        </div>
-        <div class="narrator" style="margin-bottom:10px">
-          <div class="narrator-mode">📡 AI ANALYSIS</div>
-          <div class="narrator-text" id="intel-analysis" style="white-space:pre-line;font-size:12px"></div>
-        </div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="sh" style="margin-bottom:8px"><h2>This Week's Read</h2></div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px" id="intel-article-title"></div>
-          <a id="intel-article-url" href="#" target="_blank" style="font-size:11px;color:var(--gold);word-break:break-all;display:block"></a>
-        </div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="sh" style="margin-bottom:8px"><h2>Recipe</h2></div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px" id="intel-recipe-name"></div>
-          <a id="intel-recipe-url" href="#" target="_blank" style="font-size:11px;color:var(--gold);word-break:break-all;display:block"></a>
-        </div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="sh" style="margin-bottom:8px"><h2>Side Hustle Task</h2></div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px" id="intel-hustle-task"></div>
-          <a id="intel-hustle-url" href="#" target="_blank" style="font-size:11px;color:var(--gold);word-break:break-all;display:block"></a>
-        </div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="sh" style="margin-bottom:8px"><h2>Full Brief</h2></div>
-          <pre id="intel-full" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);white-space:pre-wrap;line-height:1.6"></pre>
-        </div>
-
-        <!-- Investment Suggestions -->
-        <div id="intel-invest-section" style="display:none">
-          <div class="sh" style="margin-bottom:8px"><h2>💡 Investment Suggestions</h2></div>
-
-          <div class="card" style="margin-bottom:10px;border-color:rgba(46,204,113,0.3)">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--green);text-transform:uppercase;margin-bottom:10px">Long-Term (10+ years)</div>
-            <div id="intel-longterm"></div>
-          </div>
-
-          <div class="card" style="margin-bottom:10px;border-color:rgba(52,152,219,0.3)">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#5DADE2;text-transform:uppercase;margin-bottom:10px">Short-Term Moves</div>
-            <div id="intel-shortterm"></div>
-          </div>
-
-          <div class="card" style="margin-bottom:10px;border-color:rgba(201,168,76,0.4)">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:10px">How to Split Your Budget This Month</div>
-            <div id="intel-breakdown"></div>
-            <div id="intel-summary" style="font-size:12px;color:var(--text2);margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid var(--border)"></div>
-          </div>
-
-          <div class="card" style="margin-bottom:10px;border-color:rgba(231,76,60,0.3)">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#E74C3C;text-transform:uppercase;margin-bottom:10px">Avoid Right Now</div>
-            <div id="intel-avoid"></div>
-          </div>
-
-          <div class="card" style="margin-bottom:10px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:8px">The Bigger Picture</div>
-            <div id="intel-path" style="font-size:13px;color:var(--text);line-height:1.65"></div>
-          </div>
-
-          <!-- Log investment action -->
-          <div class="card" style="margin-bottom:10px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:10px">Log an Investment Action</div>
-            <input class="finput" id="inv-ticker" placeholder="Ticker (e.g. VOO)">
-            <select class="fselect" id="inv-action" style="margin-bottom:8px">
-              <option value="researched">Researched</option>
-              <option value="bought">Bought</option>
-              <option value="watching">Watching</option>
-              <option value="passed">Passed on it</option>
-            </select>
-            <input class="finput" id="inv-amount" type="number" placeholder="Amount $ (optional)">
-            <input class="finput" id="inv-notes" placeholder="Notes (why you made this decision)">
-            <button class="btn btn-gold btn-full" onclick="logInvestmentAction()">Log Decision</button>
-          </div>
-
-          <!-- Past investment logs -->
-          <div class="sh" style="margin-bottom:8px"><h2>Your Investment Journal</h2></div>
-          <div id="intel-invest-log"></div>
-        </div>
-        <div style="text-align:center;margin-bottom:1rem">
-          <button class="btn btn-gold btn-sm" onclick="loadIntel()">↻ Refresh</button>
-        </div>
+      <div class="card">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">Goal Settings</div>
+        <div id="profile-goal"></div>
+        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);margin-top:10px" onclick="resetOnboarding()">Change Goal</button>
       </div>
     </div>
 
-    <!-- TRACK PAGE -->
-    <div class="page" id="page-track">
-      <div class="sh"><h2>Activity Tracker</h2></div>
+  </div>
 
-      <!-- Daily check-in -->
-      <div class="card" style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:12px">Daily Check-in</div>
-
-        <div class="fin-lbl">How was today?</div>
-        <div style="display:flex;gap:8px;margin-bottom:12px" id="mood-btns">
-          <button class="btn btn-sm" data-mood="great" onclick="selectMood('great',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">🔥 Great</button>
-          <button class="btn btn-sm" data-mood="good" onclick="selectMood('good',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">✅ Good</button>
-          <button class="btn btn-sm" data-mood="okay" onclick="selectMood('okay',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">😐 Okay</button>
-          <button class="btn btn-sm" data-mood="tough" onclick="selectMood('tough',this)" style="flex:1;justify-content:center;border-color:var(--text3);color:var(--text3)">💪 Tough</button>
-        </div>
-
-        <div class="fin-lbl">Win of the day (one thing you're proud of)</div>
-        <input class="finput" id="win-input" placeholder="e.g. Hit the gym, didn't open Instagram, worked on LifeRPG">
-
-        <div class="fin-lbl">Notes (what did you do, what's on your mind)</div>
-        <textarea class="finput" id="notes-input" placeholder="Free form — what happened today, what you're working on, what's blocking you..." style="height:80px;resize:none;font-family:'DM Sans',sans-serif"></textarea>
-
-        <div class="fin-lbl">Goals in progress (check what you worked on today)</div>
-        <div id="goal-checklist" style="margin-bottom:12px"></div>
-
-        <button class="btn btn-gold btn-full" onclick="saveCheckin()">Save Today's Check-in</button>
-      </div>
-
-      <!-- App usage tracker -->
-      <div class="card" style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:10px">Session Activity</div>
-        <div id="session-stats" style="font-size:12px;color:var(--text2);line-height:1.8"></div>
-      </div>
-
-      <!-- Progress on goals -->
-      <div class="sh" style="margin-bottom:8px"><h2>Goal Progress</h2></div>
-      <div id="goals-progress"></div>
-
-      <!-- Past check-ins -->
-      <div class="sh" style="margin-bottom:8px"><h2>Recent Check-ins</h2></div>
-      <div id="past-checkins"></div>
-
-      <!-- Activity heatmap -->
-      <div class="sh" style="margin-bottom:8px"><h2>30-Day Activity</h2></div>
-      <div id="activity-heatmap" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:1rem"></div>
-    </div>
-
-  </div><!-- end scroll area -->
-
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-page="home" onclick="switchPage('home', this)">
+    <button class="nav-btn active" data-page="home" onclick="switchPage('home',this)">
       <div class="ni">⚔</div><div class="nl">HOME</div>
     </button>
-    <button class="nav-btn" data-page="daily" onclick="switchPage('daily', this)">
-      <div class="ni">📋</div><div class="nl">DAILY</div>
-      <div class="badge" id="daily-badge" style="display:none">!</div>
-    </button>
-    <button class="nav-btn" data-page="focus" onclick="switchPage('focus', this)">
-      <div class="ni">⏱</div><div class="nl">FOCUS</div>
-    </button>
-    <button class="nav-btn" data-page="finance" onclick="switchPage('finance', this)">
-      <div class="ni">💰</div><div class="nl">WEALTH</div>
-    </button>
-    <button class="nav-btn" data-page="quests" onclick="switchPage('quests', this)">
+    <button class="nav-btn" data-page="quests" onclick="switchPage('quests',this)">
       <div class="ni">🗺</div><div class="nl">QUESTS</div>
+      <div class="nbadge" id="quest-badge" style="display:none">!</div>
     </button>
-    <button class="nav-btn" data-page="intel" onclick="switchPage('intel', this)">
-      <div class="ni">📡</div><div class="nl">INTEL</div>
+    <button class="nav-btn" data-page="progress" onclick="switchPage('progress',this)">
+      <div class="ni">🏆</div><div class="nl">PROGRESS</div>
     </button>
-    <button class="nav-btn" data-page="track" onclick="switchPage('track', this)">
-      <div class="ni">📊</div><div class="nl">TRACK</div>
+    <button class="nav-btn" data-page="community" onclick="switchPage('community',this)">
+      <div class="ni">🌍</div><div class="nl">WINS</div>
+    </button>
+    <button class="nav-btn" data-page="profile" onclick="switchPage('profile',this)">
+      <div class="ni">👤</div><div class="nl">PROFILE</div>
     </button>
   </nav>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal-sheet">
     <div class="modal-icon" id="m-icon">⚔️</div>
@@ -740,7 +538,35 @@ canvas { display: block; margin: 0 auto; }
 
 <script>
 // ═══════════════════════════════════════
-// GAME DATA
+// SUPABASE CONFIG
+// ═══════════════════════════════════════
+const SB_URL = 'https://rcxuqpdlzrdzamrgwtjs.supabase.co';
+const SB_KEY = 'sb_publishable_UGydllMpryYrIsQnphtW3g_N4hW7AHZ';
+
+const sbHeaders = {
+  'apikey': SB_KEY,
+  'Authorization': `Bearer ${SB_KEY}`,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=minimal',
+};
+
+async function sbGet(table, query = '') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+  return r.ok ? r.json() : [];
+}
+
+async function sbPost(table, data) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}`, { method: 'POST', headers: sbHeaders, body: JSON.stringify(data) });
+  return r.ok || r.status === 201;
+}
+
+async function sbPatch(table, query, data) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, { method: 'PATCH', headers: { ...sbHeaders, 'Prefer': 'return=representation' }, body: JSON.stringify(data) });
+  return r.ok;
+}
+
+// ═══════════════════════════════════════
+// LEVELS
 // ═══════════════════════════════════════
 const LEVELS = [
   {min:0,    max:500,   n:1, t:'Seed',            e:'🌱'},
@@ -751,1082 +577,621 @@ const LEVELS = [
   {min:10000,max:20000, n:6, t:'Entrepreneur',     e:'🚀'},
   {min:20000,max:99999, n:7, t:'Wealth Architect', e:'👑'},
 ];
-
-const HABITS = [
-  {id:'gym',      name:'Hit the gym',         desc:'Any 20+ min workout',             xp:20, stat:'health',     icon:'🏋️'},
-  {id:'nosocial', name:'No social media',      desc:'Zero IG, FB, Threads, TikTok',   xp:15, stat:'discipline', icon:'📵'},
-  {id:'read',     name:'Read 20 min',          desc:'Books only — no feeds',           xp:15, stat:'knowledge',  icon:'📖'},
-  {id:'cook',     name:'Cook a real meal',     desc:'Full meal from scratch',          xp:10, stat:'health',     icon:'🍳'},
-  {id:'hustle',   name:'Side hustle block',    desc:'Work on LifeRPG or business',     xp:30, stat:'hustle',     icon:'💼'},
-];
-
-const QUESTS = [
-  {id:'q1',type:'side',name:'Open a brokerage account',     desc:'Fidelity or Schwab. The first step to money working for you.',              reward:'+100 XP · Investor unlocked',  xp:100, stat:{wealth:5}},
-  {id:'q2',type:'side',name:'Buy your first stock/ETF',     desc:'Put $50+ into VOO. Skin in the game changes your mindset.',                 reward:'+80 XP · Wealth +3',           xp:80,  stat:{wealth:3}},
-  {id:'q3',type:'side',name:'Build $1K emergency fund',     desc:'$1K in a HYSA. Your first financial shield.',                               reward:'+200 XP · Shield unlocked',    xp:200, stat:{wealth:8}},
-  {id:'q4',type:'side',name:'7-day no social media',        desc:'Prove you control your attention for 7 days.',                              reward:'+120 XP · Discipline +10',     xp:120, stat:{discipline:10}},
-  {id:'q5',type:'side',name:'Log 30 workouts',              desc:'Not consecutive — total. Build the physical foundation.',                   reward:'+150 XP · Health +15',         xp:150, stat:{health:15}},
-  {id:'q6',type:'side',name:'Research 1 business (1-pager)',desc:'5+ hrs on vending machines, laundromat, or LifeRPG. Write it up.',          reward:'+150 XP · Hustle +5',          xp:150, stat:{hustle:5}},
-  {id:'q7',type:'main',name:'Complete MSSE at FSU',         desc:'Finish the degree. Stop treating it as a burden — it\'s a weapon.',         reward:'+600 XP · Knowledge +25',      xp:600, stat:{knowledge:25}},
-  {id:'q8',type:'main',name:'Reach SES-level role by 2028', desc:'Senior government position. The anchor. Not the ceiling.',                  reward:'+500 XP · +$20K income',       xp:500, stat:{wealth:15}, incomeBoost:20000},
-  {id:'q9',type:'main',name:'Launch your first business',   desc:'Register an LLC. Make your first dollar of revenue.',                       reward:'+800 XP · Entrepreneur title', xp:800, stat:{hustle:20}, incomeBoost:10000},
-  {id:'q10',type:'life',name:'Launch LifeRPG publicly',     desc:'Deploy multi-user with Supabase, auth, leaderboards. Post to Reddit.',       reward:'+500 XP · Builder title',      xp:500, stat:{hustle:15}},
-  {id:'q11',type:'life',name:'Become completely debt-free',  desc:'Zero consumer debt. The month you pay it off, everything accelerates.',     reward:'+400 XP · Wealth +20',         xp:400, stat:{wealth:20}},
-];
-
-const BOSSES = [
-  {id:'b1',cls:'',     icon:'😴',name:'The Comfort Trap',         nameC:'bn-text',   type:'Mini Boss',  desc:'Stable job, nice house — it whispers "you\'re fine." Gains HP every day without a plan.',  defeat:'30 habit days + business research',         reward:'+200 XP'},
-  {id:'b2',cls:'semi', icon:'💳',name:'Lifestyle Inflation',      nameC:'bn-purple', type:'Semi Boss',  desc:'Every raise gets eaten before you invest. New car, subscriptions. Income grows, wealth doesn\'t.',  defeat:'Open brokerage + $1K emergency fund',        reward:'+400 XP'},
-  {id:'b3',cls:'semi', icon:'⛓️',name:'Single Income Dependency', nameC:'bn-purple', type:'Semi Boss',  desc:'One job, one paycheck, one point of failure. $61K is the foundation — not the destination.', defeat:'Launch a business + invest in stocks',        reward:'+600 XP'},
-  {id:'b4',cls:'',     icon:'⏳',name:'The Clock',                nameC:'bn-teal',   type:'Hidden Boss',desc:'Every hour on YouTube instead of building is time you can\'t buy back.',                  defeat:'Level 3 + 90 total habit check-ins',         reward:'+500 XP', unlockLvl:3},
-  {id:'b5',cls:'',     icon:'👑',name:'The Generational Cycle',   nameC:'bn-red',    type:'FINAL BOSS', desc:'THIS IS WHAT YOU\'RE ACTUALLY FIGHTING. The cycle ends with you. Your kids shouldn\'t start from zero.', defeat:'Debt-free + business + rental + MSSE + SES', reward:'GAME COMPLETE', isFinal:true},
-];
-
-const SC = {'health':'#2ECC71','discipline':'#3498DB','knowledge':'#9B59B6','wealth':'#C9A84C','hustle':'#E67E22','network':'#1ABC9C'};
-
-const NARRATOR_MODES = ['Tough Love','Coach','Hype Man','Quiet'];
-const NARRATORS = {
-  'Tough Love':[
-    "You're at work with nothing to do and you're watching YouTube. That's not a break — that's a choice. The business won't build itself.",
-    "Bored at work means opportunity, not comfort. Right now you're being paid to sit there. Use that time.",
-    "The Comfort Trap boss is full HP. Every day without action is a day it regenerates. You said you perform under pressure — create some.",
-    "You have a CS degree, Python, SQL, and real government data experience. Most people would kill for your stack. Stop wasting it.",
-  ],
-  'Coach':[
-    "You're not lazy — you're underchallenged. There's a real difference. Raise the stakes on something that actually matters.",
-    "The fact that you're thinking about generational wealth at your age puts you ahead of 90% of people. Now act like it.",
-    "LifeRPG could be the thing that changes your trajectory — not because it'll make you rich overnight, but because building it will change how you think.",
-    "Your situation is genuinely good. Stable income, homeowner, family, real skills. The foundation is solid. Time to build on it.",
-  ],
-  'Hype Man':[
-    "BRO. You own a house. You have a CS degree. You're working on a MASTERS. You're building a business. You're doing it. Keep going.",
-    "LifeRPG is YOUR idea. YOUR vision. Nobody else is building this. That's not a small thing — that's your edge.",
-    "You said you need pressure to perform. Here's your pressure: your future family is watching what you do with your free time right now.",
-    "Every habit you log is permanent XP. Every quest you complete is forever. Nobody can take that away. Build.",
-  ],
-  'Quiet':[
-    "Check your habits. Log your screen time. Update your finances. Small inputs compound.",
-    "Habit streak is the leading indicator. Everything else follows from showing up daily.",
-    "Net worth moves slowly at first. Log it anyway. The trend matters more than the number.",
-    "Focus timer running = no excuses. Pick a task. Start the clock.",
-  ],
-};
-
-const ST_REACTIONS = {
-  good:{msg:(h)=>`${h}h on phone. Disciplined. The Comfort Trap took 5% HP damage from your restraint today.`, cls:'good'},
-  ok:{msg:(h)=>`${h}h on phone. Average. Not bad, not great. What did those hours cost you?`, cls:'ok'},
-  bad:{msg:(h)=>`${h}h on phone. The Comfort Trap gained 8% HP today. Where did those hours go?`, cls:'bad'},
-  ugly:{msg:(h)=>`${h}h. That's a full workday of distraction. Your future family doesn't get that time back. Neither do you. Bosses gained 12% HP.`, cls:'ugly'},
-};
+function getLvl(xp) { return LEVELS.find(l=>xp>=l.min&&xp<l.max)||LEVELS[LEVELS.length-1]; }
 
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
-const KEY = 'hjquest_v1';
+const KEY = 'hjquest_v5';
 let S = null;
+let TEMPLATES = {};
+let USER_QUESTS = [];
+let USER_ACHIEVEMENTS = [];
 
 const DEF = {
-  xp:0, income:61000, assets:[],
-  stats:{hustle:10,discipline:8,knowledge:20,wealth:5,health:12,network:8},
-  habits:{}, streaks:{gym:0,nosocial:0,read:0,cook:0,hustle:0},
-  bestStreak:0, weekLog:{}, completedQuests:[], defeatedBosses:[],
-  events:[], lastDate:'', narratorMode:0,
-  bossHP:{b1:100,b2:100,b3:100,b4:100,b5:100},
-  focusDone:0, focusAbandoned:0, screenTimeToday:0,
+  deviceId: 'hj_' + Math.random().toString(36).substr(2,9),
+  onboarded: false,
+  name: '',
+  goalKey: '',
+  goalCategory: '',
+  goalDescription: '',
+  goalDetail: '',
+  timelineMonths: 6,
+  income: 0,
+  xp: 0,
+  completedQuestIds: [],
+  earnedBadgeIds: [],
+  streak: 0,
+  lastQuestDate: '',
+  progressPct: 0,
+  startDate: new Date().toISOString().slice(0,10),
 };
 
 function load() {
-  try { const r=localStorage.getItem(KEY); S=r?JSON.parse(r):structuredClone(DEF); }
-  catch(e) { S=structuredClone(DEF); }
-  ['assets','events','bossHP','focusDone','focusAbandoned'].forEach(k=>{ if(!S[k]) S[k]=DEF[k]; });
-  checkDayReset();
+  try { const r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : { ...DEF }; }
+  catch(e) { S = { ...DEF }; }
 }
 
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {}
-}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 
 function today() { return new Date().toISOString().slice(0,10); }
 
-function checkDayReset() {
-  const t = today();
-  if (S.lastDate && S.lastDate !== t) {
-    const prev = Object.keys(S.habits[S.lastDate]||{}).length;
-    S.weekLog[S.lastDate] = prev;
-    HABITS.forEach(h=>{ if (!(S.habits[S.lastDate]||{})[h.id]) S.streaks[h.id]=0; });
-    const missed = HABITS.length - prev;
-    if (missed > 0) {
-      Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.min(100,S.bossHP[k]+missed*2); });
-      logEvent('⚠️','Bosses Regenerated',`Missed ${missed} habit${missed>1?'s':''} yesterday. Bosses gained ${missed*2}% HP.`,null,'warn');
-    }
-    S.screenTimeToday = 0;
-  }
-  S.lastDate = t;
-}
-
-function getLvl() { return LEVELS.find(l=>S.xp>=l.min&&S.xp<l.max)||LEVELS[LEVELS.length-1]; }
-
-function addXP(n, originEl) {
-  const prev = getLvl().n;
-  S.xp += n;
-  const next = getLvl().n;
-  if (originEl) spawnXPFlyup(n, originEl);
-  if (next > prev) {
-    logEvent('⚡','Level Up!',`You reached Level ${next} — ${getLvl().t}.`,null,'lvlup');
-    setTimeout(()=>openModal('LEVEL UP! ⚡',`You reached Level ${next} — ${getLvl().t}. The path forward is getting clearer.`,`New level: ${getLvl().e} ${getLvl().t}`),600);
-  }
-}
-
-function calcNW() {
-  let a=0,d=0; S.assets.forEach(x=>{ if(x.type==='debt') d+=x.value; else a+=x.value; });
-  return {nw:a-d,assets:a,debts:d};
-}
-
-function logEvent(icon,title,body,xp,type='info') {
-  S.events.unshift({icon,title,body,xp,type,date:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
-  if (S.events.length>80) S.events=S.events.slice(0,80);
-}
-
-function getAssetIcon(t) { return {investment:'📈',savings:'🏦',retirement:'💰',property:'🏠',vehicle:'🚗',business:'🏢',debt:'⛔'}[t]||'📦'; }
-
 // ═══════════════════════════════════════
-// ACTIONS
+// ONBOARDING STATE
 // ═══════════════════════════════════════
-function toggleHabit(id, el) {
-  const t=today(); if (!S.habits[t]) S.habits[t]={};
-  const h=HABITS.find(x=>x.id===id);
-  const was=!!S.habits[t][id];
-  if (was) {
-    delete S.habits[t][id];
-    S.xp=Math.max(0,S.xp-h.xp);
-    S.stats[h.stat]=Math.max(0,S.stats[h.stat]-1);
-    if (S.streaks[id]>0) S.streaks[id]--;
-    Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.min(100,S.bossHP[k]+3); });
-  } else {
-    S.habits[t][id]=true;
-    addXP(h.xp, el);
-    S.streaks[id]=(S.streaks[id]||0)+1;
-    if (S.streaks[id]>S.bestStreak) S.bestStreak=S.streaks[id];
-    S.stats[h.stat]=Math.min(100,(S.stats[h.stat]||0)+1);
-    trackAction('habit_complete', h.name);
-    Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,S.bossHP[k]-2); });
-    shakeBosses();
-    logEvent(h.icon,h.name+' ✓',`Streak: ${S.streaks[id]} day${S.streaks[id]!==1?'s':''}. All active bosses -2% HP.`,h.xp,'habit');
+let obCat = '';
+let obGoalKey = '';
 
-    const done=Object.keys(S.habits[t]).length;
-    S.weekLog[t]=done;
-    if (done===HABITS.length) {
-      setTimeout(()=>{
-        addXP(50);
-        triggerPerfectDay();
-        logEvent('🌟','PERFECT DAY!','All 5 habits done. +50 bonus XP. Bosses -5% HP.',50,'perfect');
-        Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,S.bossHP[k]-5); });
-        openModal('PERFECT DAY ⚡','All 5 habits completed. This is what discipline looks like. Do it again tomorrow.','+50 BONUS XP\nAll active bosses -5% HP');
-        save(); renderAll();
-      },300);
-    }
-  }
-  save(); renderAll();
+const GOAL_OPTIONS = {
+  financial: [
+    { key: 'pay_off_credit_card', icon: '💳', title: 'Pay off credit card debt', desc: 'Eliminate what you owe on credit cards' },
+    { key: 'build_emergency_fund', icon: '🛡️', title: 'Build an emergency fund', desc: 'Save $1,000–$5,000 safety net' },
+    { key: 'invest_first_dollar', icon: '📈', title: 'Start investing', desc: 'Open a brokerage and make your first investment' },
+    { key: 'save_house_down_payment', icon: '🏠', title: 'Save for a house', desc: 'Build your down payment fund' },
+    { key: 'increase_income', icon: '💰', title: 'Increase income by $500/mo', desc: 'Freelance, raise, or side hustle' },
+  ],
+  career: [
+    { key: 'get_first_job', icon: '🎓', title: 'Land my first job', desc: 'Get hired after graduation' },
+    { key: 'change_careers', icon: '💻', title: 'Change careers to tech', desc: 'Transition into a tech or data role' },
+    { key: 'get_promoted', icon: '⬆️', title: 'Get promoted', desc: 'Earn the next level at my current job' },
+    { key: 'start_a_business', icon: '🏢', title: 'Start a business', desc: 'Launch and make your first dollar' },
+  ],
+  health: [
+    { key: 'lose_weight', icon: '⚖️', title: 'Lose weight (20 lbs)', desc: 'Healthy weight loss through diet and exercise' },
+    { key: 'build_gym_habit', icon: '🏋️', title: 'Work out 4x per week', desc: 'Build a sustainable exercise habit' },
+    { key: 'reduce_screen_time', icon: '📵', title: 'Reduce screen time', desc: 'Get under 3 hours/day of phone use' },
+    { key: 'improve_sleep', icon: '😴', title: 'Fix my sleep schedule', desc: 'Consistent 7–8 hours every night' },
+  ],
+  education: [
+    { key: 'complete_degree', icon: '🎓', title: 'Complete my degree', desc: 'Finish your current college program' },
+    { key: 'learn_new_skill', icon: '🧠', title: 'Learn a new skill in 90 days', desc: 'Master something specific through practice' },
+  ],
+  life: [
+    { key: 'build_better_habits', icon: '⚡', title: 'Build 3 core habits', desc: 'Create a sustainable daily routine' },
+    { key: 'find_relationship', icon: '🤝', title: 'Build better relationships', desc: 'Expand and deepen social connections' },
+  ],
+};
+
+function selectCat(el) {
+  document.querySelectorAll('#ob-step-2 .ob-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  obCat = el.dataset.cat;
+  document.getElementById('ob-next-2').disabled = false;
 }
 
-function logScreenTime() {
-  const h = parseFloat(document.getElementById('st-slider').value)||0;
-  if (h===0) { showToast('Move the slider first'); return; }
-  S.screenTimeToday = h;
-  let category, xpDelta=0, hpDelta=0;
-  if (h<=2) { category='good'; xpDelta=15; hpDelta=-5; S.stats.discipline=Math.min(100,S.stats.discipline+2); }
-  else if (h<=4) { category='ok'; xpDelta=5; hpDelta=0; }
-  else if (h<=6) { category='bad'; xpDelta=-5; hpDelta=8; S.stats.discipline=Math.max(0,S.stats.discipline-1); }
-  else { category='ugly'; xpDelta=-10; hpDelta=12; S.stats.discipline=Math.max(0,S.stats.discipline-3); }
-
-  if (xpDelta>0) addXP(xpDelta);
-  else S.xp=Math.max(0,S.xp+xpDelta);
-  Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,Math.min(100,S.bossHP[k]+hpDelta)); });
-
-  const msg = ST_REACTIONS[category].msg(h);
-  logEvent('📱','Screen Time Logged',msg,xpDelta>0?xpDelta:null,'screentime');
-  if (xpDelta>0) showToast(`📱 ${h}h logged · +${xpDelta} XP`);
-  else showToast(`📱 ${h}h logged — bosses +${hpDelta}% HP`);
-  if (hpDelta>0) shakeBosses();
-  save(); renderAll();
-  document.getElementById('st-slider').value=0;
-  document.getElementById('st-val').textContent='0h';
-  document.getElementById('st-reaction').style.display='none';
+function obNext(step) {
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(`ob-step-${step}`).classList.add('active');
+  if (step === 3) renderGoalOptions();
+  if (step === 5) renderRoadmap();
 }
 
-function updateScreenTime(v) {
-  document.getElementById('st-val').textContent=v+'h';
-  const reaction=document.getElementById('st-reaction');
-  if (parseFloat(v)===0) { reaction.style.display='none'; return; }
-  reaction.style.display='block';
-  const h=parseFloat(v);
-  let cat = h<=2?'good':h<=4?'ok':h<=6?'bad':'ugly';
-  reaction.className='st-reaction '+cat;
-  reaction.textContent=ST_REACTIONS[cat].msg(h);
+function renderGoalOptions() {
+  const options = GOAL_OPTIONS[obCat] || [];
+  document.getElementById('specific-goals').innerHTML = options.map(o => `
+    <div class="ob-option" data-key="${o.key}" onclick="selectGoal(this)">
+      <div class="ob-option-icon">${o.icon}</div>
+      <div class="ob-option-text">
+        <div class="ob-option-title">${o.title}</div>
+        <div class="ob-option-desc">${o.desc}</div>
+      </div>
+    </div>`).join('');
 }
 
-function addAsset() {
-  const name=document.getElementById('fa-name').value.trim();
-  const type=document.getElementById('fa-type').value;
-  const val=parseFloat(document.getElementById('fa-val').value)||0;
-  if (!name||!val) { showToast('Enter a name and value'); return; }
-  const prev=calcNW().nw;
-  S.assets.push({id:'a'+Date.now(),name,type,value:val,addedAt:new Date().toISOString()});
-  const delta=calcNW().nw-prev;
-  S.stats.wealth=Math.min(100,S.stats.wealth+(type==='debt'?-1:1));
-  if (type!=='debt') { addXP(10); showToast(`💰 +$${val.toLocaleString()} logged`); }
-  else { Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.min(100,S.bossHP[k]+5); }); showToast('⛔ Debt logged — bosses +5% HP'); }
-  logEvent(getAssetIcon(type),type==='debt'?'Debt Logged':'Asset Logged',`${name}: $${val.toLocaleString()}. Net worth ${delta>=0?'▲':'▼'}$${Math.abs(delta).toLocaleString()}.`,type!=='debt'?10:null,'finance');
-  document.getElementById('fa-name').value='';
-  document.getElementById('fa-val').value='';
-  save(); renderAll();
+function selectGoal(el) {
+  document.querySelectorAll('#ob-step-3 .ob-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  obGoalKey = el.dataset.key;
+  document.getElementById('ob-next-3').disabled = false;
 }
 
-function removeAsset(id) {
-  S.assets=S.assets.filter(a=>a.id!==id);
-  save(); renderAll(); showToast('Removed');
+function checkStep4() {
+  const name = document.getElementById('ob-name').value.trim();
+  const detail = document.getElementById('ob-goal-detail').value.trim();
+  document.getElementById('ob-next-4').disabled = !(name && detail);
 }
 
-function completeQuest(id) {
-  if (S.completedQuests.includes(id)) return;
-  const q=QUESTS.find(x=>x.id===id); if (!q) return;
-  S.completedQuests.push(id);
-  addXP(q.xp);
-  Object.entries(q.stat||{}).forEach(([k,v])=>{ S.stats[k]=Math.min(100,(S.stats[k]||0)+v); });
-  if (q.incomeBoost) S.income+=q.incomeBoost;
-  Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,S.bossHP[k]-15); });
-  shakeBosses();
-  logEvent('✅','Quest Complete!',`${q.name}. All active bosses -15% HP.`,q.xp,'quest');
-  save(); openModal('Quest Complete! ✅',q.name,`Reward: ${q.reward}`); renderAll();
+function renderRoadmap() {
+  const allOptions = Object.values(GOAL_OPTIONS).flat();
+  const goalInfo = allOptions.find(o => o.key === obGoalKey) || {};
+  const template = TEMPLATES[obGoalKey];
+
+  document.getElementById('ob-goal-icon').textContent = goalInfo.icon || '🎯';
+  document.getElementById('ob-goal-title').textContent = goalInfo.title || 'Your Roadmap';
+  document.getElementById('ob-goal-desc').textContent = `5 steps to: ${document.getElementById('ob-goal-detail').value}`;
+
+  const roadmap = template?.roadmap || [
+    'Define your goal clearly',
+    'Take the first small action today',
+    'Build a daily habit around it',
+    'Track progress weekly',
+    'Hit your milestone',
+  ];
+
+  document.getElementById('ob-roadmap').innerHTML = roadmap.map((step, i) => `
+    <div class="roadmap-step">
+      <div class="roadmap-num">${i+1}</div>
+      <div class="roadmap-text">${step}</div>
+    </div>`).join('');
+
+  const firstQuest = template?.quests?.[0];
+  document.getElementById('ob-first-quest').textContent = firstQuest ?
+    `${firstQuest.title} (+${firstQuest.xp} XP)` : 'Your first quest is ready';
 }
 
-function defeatBoss(id) {
-  if (S.defeatedBosses.includes(id)) return;
-  const b=BOSSES.find(x=>x.id===id); if (!b) return;
-  S.defeatedBosses.push(id); S.bossHP[id]=0;
-  const xpMap={b1:200,b2:400,b3:600,b4:500,b5:2000};
-  addXP(xpMap[id]||300);
-  logEvent(b.icon,'Boss Defeated!',`${b.name} defeated. ${b.isFinal?'The cycle is broken. Your kids will be born ahead.':'The path forward is clearer.'}`,xpMap[id]||300,'boss');
+async function finishOnboarding() {
+  const name = document.getElementById('ob-name').value.trim();
+  const goalDetail = document.getElementById('ob-goal-detail').value.trim();
+  const timeline = parseInt(document.getElementById('ob-timeline').value);
+  const income = parseInt(document.getElementById('ob-income').value) || 0;
+
+  S.onboarded = true;
+  S.name = name;
+  S.goalKey = obGoalKey;
+  S.goalCategory = obCat;
+  S.goalDetail = goalDetail;
+  S.timelineMonths = timeline;
+  S.income = income;
+  S.progressPct = 0;
   save();
-  openModal(b.isFinal?'🏆 GAME COMPLETE':'Boss Defeated!',
-    b.isFinal?'The Generational Cycle is broken. Your kids will be born on second base because of what you chose to build today.':
-    `${b.name} has been defeated. Real-world milestone conquered. The game gets harder from here.`,
-    b.reward);
+
+  // Save user to Supabase
+  await sbPost('app_users', {
+    device_id: S.deviceId,
+    name: S.name,
+    goal_key: S.goalKey,
+    goal_type: S.goalCategory,
+    goal_description: GOAL_OPTIONS[obCat]?.find(o=>o.key===obGoalKey)?.title || '',
+    goal_detail: goalDetail,
+    timeline_months: timeline,
+    income: income,
+    onboarded: true,
+  });
+
+  // Generate first batch of daily quests from templates
+  await generateDailyQuests();
+
+  // Show main app
+  document.getElementById('onboard').classList.add('hidden');
+  document.getElementById('main-app').style.display = 'flex';
+  renderAll();
+  showToast(`Welcome ${name}! Your journey begins. ⚔`);
+}
+
+// ═══════════════════════════════════════
+// QUEST GENERATION (from templates, no API)
+// ═══════════════════════════════════════
+async function generateDailyQuests() {
+  if (!TEMPLATES[S.goalKey]) return;
+  const template = TEMPLATES[S.goalKey];
+  const allQuests = template.quests || [];
+
+  // Pick 5 quests the user hasn't completed
+  const notDone = allQuests.filter(q => !S.completedQuestIds.includes(q.title));
+  const todayQuests = notDone.slice(0, 5);
+
+  // Save to Supabase
+  for (const q of todayQuests) {
+    await sbPost('user_daily_quests', {
+      device_id: S.deviceId,
+      quest_date: today(),
+      quest_title: q.title,
+      quest_description: q.description,
+      xp_reward: q.xp,
+      difficulty: q.difficulty || 'medium',
+      resource_url: q.url || '',
+      status: 'pending',
+    });
+  }
+}
+
+async function loadTodayQuests() {
+  const quests = await sbGet('user_daily_quests',
+    `?device_id=eq.${S.deviceId}&quest_date=eq.${today()}&order=created_at.asc`
+  );
+  return quests || [];
+}
+
+async function loadAllQuests() {
+  const quests = await sbGet('user_daily_quests',
+    `?device_id=eq.${S.deviceId}&order=created_at.desc&limit=50`
+  );
+  return quests || [];
+}
+
+async function completeQuest(questId, questTitle, xpReward, el) {
+  // Mark complete in Supabase
+  await sbPatch('user_daily_quests', `?id=eq.${questId}`, {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  });
+
+  // Add XP
+  const prevLvl = getLvl(S.xp).n;
+  S.xp += xpReward;
+  S.completedQuestIds.push(questTitle);
+  S.progressPct = Math.min(100, S.progressPct + Math.floor(100 / (TEMPLATES[S.goalKey]?.quests?.length || 10)));
+  save();
+
+  // XP flyup animation
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    const flyup = document.createElement('div');
+    flyup.className = 'xp-flyup';
+    flyup.textContent = `+${xpReward} XP`;
+    flyup.style.left = (rect.left + rect.width/2 - 30) + 'px';
+    flyup.style.top = (rect.top - 10) + 'px';
+    document.body.appendChild(flyup);
+    setTimeout(() => flyup.remove(), 1200);
+  }
+
+  // Update Supabase user XP
+  await sbPatch('app_users', `?device_id=eq.${S.deviceId}`, {
+    total_xp: S.xp,
+    current_level: getLvl(S.xp).n,
+    progress_percentage: S.progressPct,
+  });
+
+  showToast(`✓ ${questTitle} — +${xpReward} XP`);
+
+  // Check level up
+  const newLvl = getLvl(S.xp).n;
+  if (newLvl > prevLvl) {
+    setTimeout(() => openModal('LEVEL UP! ⚡', `You reached Level ${newLvl} — ${getLvl(S.xp).t}. The path gets clearer.`,
+      `${getLvl(S.xp).e} Level ${newLvl} — ${getLvl(S.xp).t}`), 500);
+  }
+
+  // Check for milestone badges
+  await checkMilestones();
+
   renderAll();
 }
 
 // ═══════════════════════════════════════
-// FOCUS TIMER
+// MILESTONES + BADGES
 // ═══════════════════════════════════════
-let timerInterval=null, timerTotal=0, timerRemaining=0, timerRunning=false;
+async function checkMilestones() {
+  if (!TEMPLATES[S.goalKey]) return;
+  const milestones = TEMPLATES[S.goalKey].milestones || [];
+  const doneCount = S.completedQuestIds.length;
 
-function setTimer(mins) {
-  if (timerRunning) { showToast('Stop current timer first'); return; }
-  timerTotal=mins*60; timerRemaining=mins*60;
-  renderTimer();
-  document.getElementById('timer-lbl').textContent=`${mins} MIN BLOCK`;
-  showToast(`${mins}-minute block selected`);
-}
-
-function startTimer() {
-  if (timerTotal===0) { showToast('Select a time block first'); return; }
-  if (timerRunning) return;
-  const task=document.getElementById('focus-task-input').value.trim()||'Focus block';
-  timerRunning=true;
-  document.getElementById('timer-start-btn').style.display='none';
-  document.getElementById('timer-stop-btn').style.display='inline-flex';
-  document.getElementById('timer-task').textContent='🎯 '+task;
-  document.getElementById('timer-lbl').textContent='IN PROGRESS';
-  logEvent('⏱','Focus Block Started',`${Math.round(timerTotal/60)} min block: "${task}"`,null,'focus');
-
-  timerInterval=setInterval(()=>{
-    timerRemaining--;
-    renderTimer();
-    if (timerRemaining<=0) {
-      clearInterval(timerInterval); timerRunning=false;
-      completeTimerBlock(task);
+  for (const m of milestones) {
+    if (S.earnedBadgeIds.includes(m.badge)) continue;
+    // Roughly check if they've done enough quests
+    const totalQuests = TEMPLATES[S.goalKey].quests?.length || 10;
+    const thresholds = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0];
+    const milestoneIdx = milestones.indexOf(m);
+    const threshold = thresholds[milestoneIdx] || 0;
+    if (doneCount / totalQuests >= threshold) {
+      S.earnedBadgeIds.push(m.badge);
+      S.xp += m.xp;
+      save();
+      await sbPost('user_achievements', {
+        device_id: S.deviceId,
+        badge_name: m.title,
+        badge_icon: m.badge,
+        badge_description: m.title,
+        xp_earned: m.xp,
+      });
+      setTimeout(() => openModal('Badge Unlocked! 🏆', m.title, `${m.badge} +${m.xp} XP`), 800);
+      break;
     }
-  },1000);
-}
-
-function stopTimer() {
-  if (!timerRunning) return;
-  clearInterval(timerInterval); timerRunning=false;
-  const elapsed=timerTotal-timerRemaining;
-  document.getElementById('timer-start-btn').style.display='inline-flex';
-  document.getElementById('timer-stop-btn').style.display='none';
-  document.getElementById('timer-lbl').textContent='ABANDONED';
-  document.getElementById('timer-task').textContent='';
-  S.focusAbandoned++;
-  S.xp=Math.max(0,S.xp-10);
-  Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.min(100,S.bossHP[k]+5); });
-  const task=document.getElementById('focus-task-input').value.trim()||'Focus block';
-  logEvent('❌','Focus Block Abandoned',`Quit after ${Math.floor(elapsed/60)}m ${elapsed%60}s. -10 XP. Bosses +5% HP.`,null,'warn');
-  showToast(`Block abandoned — -10 XP · Bosses +5% HP`);
-  save(); renderAll();
-}
-
-function completeTimerBlock(task) {
-  const mins=Math.round(timerTotal/60);
-  const xp=mins>=50?90:40;
-  S.focusDone++;
-  addXP(xp);
-  Object.keys(S.bossHP).forEach(k=>{ if (!S.defeatedBosses.includes(k)) S.bossHP[k]=Math.max(0,S.bossHP[k]-8); });
-  document.getElementById('timer-start-btn').style.display='inline-flex';
-  document.getElementById('timer-stop-btn').style.display='none';
-  document.getElementById('timer-lbl').textContent='COMPLETE ✓';
-  document.getElementById('timer-task').textContent='';
-  timerTotal=0; timerRemaining=0; renderTimer();
-  logEvent('⏱','Focus Block Complete!',`${mins} min block done: "${task}". Bosses -8% HP.`,xp,'focus');
-  shakeBosses();
-  openModal('Focus Block Complete! 🎯',`${mins}-minute deep work session finished. That's real.`,`+${xp} XP\nAll active bosses -8% HP`);
-  save(); renderAll();
-}
-
-function renderTimer() {
-  const canvas=document.getElementById('timer-canvas');
-  const ctx=canvas.getContext('2d');
-  const W=160,H=160,cx=80,cy=80,r=68;
-  ctx.clearRect(0,0,W,H);
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
-  ctx.strokeStyle='rgba(26,35,50,0.9)'; ctx.lineWidth=8; ctx.stroke();
-  if (timerTotal>0) {
-    const progress=(timerTotal-timerRemaining)/timerTotal;
-    const start=-Math.PI/2, end=start+progress*Math.PI*2;
-    ctx.beginPath(); ctx.arc(cx,cy,r,start,end);
-    ctx.strokeStyle=timerRunning?'#C9A84C':'#7A612A'; ctx.lineWidth=8;
-    ctx.lineCap='round'; ctx.stroke();
   }
-  const mins=Math.floor(timerRemaining/60), secs=timerRemaining%60;
-  document.getElementById('timer-num').textContent=`${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
 }
 
 // ═══════════════════════════════════════
-// NARRATOR
+// COMMUNITY
 // ═══════════════════════════════════════
-let narratorTimer=null;
+async function shareWin() {
+  const title = document.getElementById('win-title').value.trim();
+  const body = document.getElementById('win-body').value.trim();
+  if (!title) { showToast('Add a title for your win'); return; }
 
-function buildNarratorText() {
-  const mode=NARRATOR_MODES[S.narratorMode%NARRATOR_MODES.length];
-  const pool=NARRATORS[mode];
-  const t=today();
-  const done=Object.keys(S.habits[t]||{}).length;
-  let base=pool[Math.floor(Math.random()*pool.length)];
-  if (done===0&&new Date().getHours()>10) base+=' No habits logged yet today.';
-  if (done===HABITS.length) base=' Perfect day in progress. Lock in.';
-  if (S.screenTimeToday>=6) base+=' Screen time is high — bosses are feeding.';
-  return base;
-}
-
-function refreshNarrator() {
-  const el=document.getElementById('narrator-text');
-  const modeEl=document.getElementById('narrator-mode');
-  modeEl.textContent=NARRATOR_MODES[S.narratorMode%NARRATOR_MODES.length];
-  el.classList.add('typing'); el.textContent='';
-  const text=buildNarratorText();
-  let i=0;
-  if (narratorTimer) clearInterval(narratorTimer);
-  narratorTimer=setInterval(()=>{
-    el.textContent=text.slice(0,i++);
-    if(i>text.length){ clearInterval(narratorTimer); el.classList.remove('typing'); }
-  },16);
-}
-
-function cycleNarratorMode() {
-  S.narratorMode=(S.narratorMode+1)%NARRATOR_MODES.length;
-  save(); refreshNarrator();
-}
-
-// ═══════════════════════════════════════
-// EFFECTS
-// ═══════════════════════════════════════
-function spawnXPFlyup(n, originEl) {
-  const el=document.createElement('div');
-  el.className='xp-flyup';
-  el.textContent='+'+n+' XP';
-  const rect=originEl.getBoundingClientRect();
-  el.style.left=(rect.left+rect.width/2-30)+'px';
-  el.style.top=(rect.top-10)+'px';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1200);
-}
-
-function triggerPerfectDay() {
-  const el=document.createElement('div');
-  el.className='perfect-flash';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1500);
-}
-
-function shakeBosses() {
-  document.querySelectorAll('.boss-item:not(.defeated)').forEach(el=>{
-    el.classList.remove('shaking');
-    void el.offsetWidth;
-    el.classList.add('shaking');
-    setTimeout(()=>el.classList.remove('shaking'),400);
+  await sbPost('community_wins', {
+    device_id: S.deviceId,
+    goal_type: S.goalCategory,
+    win_title: title,
+    win_description: body,
+    xp_at_time: S.xp,
+    level_at_time: getLvl(S.xp).n,
   });
+
+  S.xp += 25;
+  save();
+  document.getElementById('win-title').value = '';
+  document.getElementById('win-body').value = '';
+  showToast('Win shared! +25 XP');
+  loadCommunityFeed();
+}
+
+async function loadCommunityFeed() {
+  const wins = await sbGet('community_wins', '?order=created_at.desc&limit=20');
+  if (!wins?.length) {
+    document.getElementById('community-feed').innerHTML = '<div style="color:var(--text3);font-size:12px;padding:1rem 0;text-align:center">No wins shared yet. Be the first.</div>';
+    return;
+  }
+  const catIcons = { financial: '💰', career: '💼', health: '💪', education: '🎓', life: '⚡' };
+  document.getElementById('community-feed').innerHTML = wins.map(w => `
+    <div class="community-post">
+      <div class="post-header">
+        <div class="post-icon">${catIcons[w.goal_type] || '⚔'}</div>
+        <div class="post-meta">
+          <div class="post-title">${w.win_title}</div>
+          <div class="post-goal">Level ${w.level_at_time || 1} · ${w.goal_type || 'quest'} goal · ${new Date(w.created_at).toLocaleDateString()}</div>
+        </div>
+      </div>
+      ${w.win_description ? `<div class="post-body">${w.win_description}</div>` : ''}
+      <div class="post-footer">
+        <span class="post-likes" onclick="likeWin('${w.id}', this)">❤️ ${w.likes || 0}</span>
+      </div>
+    </div>`).join('');
+}
+
+async function likeWin(id, el) {
+  await sbPatch('community_wins', `?id=eq.${id}`, { likes: (parseInt(el.textContent.split(' ')[1]||0)) + 1 });
+  el.textContent = `❤️ ${parseInt(el.textContent.split(' ')[1]||0) + 1}`;
 }
 
 // ═══════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════
-function renderAll() {
-  renderTopbar(); renderHome(); renderDaily(); renderFinance(); renderFocus();
-  renderQB(); updateDailyBadge();
+async function renderAll() {
+  renderTopbar();
+  await renderHome();
+  updateQuestBadge();
 }
 
 function renderTopbar() {
-  const lvl=getLvl();
-  document.getElementById('lvl-chip').textContent='LVL '+lvl.n;
-  document.getElementById('xp-mini').textContent=S.xp.toLocaleString()+' XP';
+  const lvl = getLvl(S.xp);
+  document.getElementById('lvl-chip').textContent = 'LVL ' + lvl.n;
+  document.getElementById('xp-mini').textContent = S.xp + ' XP';
 }
 
-function renderHome() {
-  const lvl=getLvl();
-  document.getElementById('hero-emoji').textContent=lvl.e;
-  document.getElementById('lvl-big').textContent=lvl.n;
-  document.getElementById('lvl-name').textContent=lvl.t.toUpperCase();
-  document.getElementById('salary-lbl').textContent='$'+Math.round(S.income/1000)+'K';
-  const pct=Math.round(((S.xp-lvl.min)/(lvl.max-lvl.min))*100);
-  document.getElementById('xp-fill').style.width=Math.min(Math.max(pct,0),100)+'%';
-  document.getElementById('xp-lbl2').textContent='LVL '+lvl.n+' PROGRESS';
-  document.getElementById('xp-right').textContent=S.xp+' / '+lvl.max;
-  const {nw}=calcNW();
-  document.getElementById('m-nw').textContent='$'+nw.toLocaleString();
-  document.getElementById('m-income').textContent='$'+Math.round(S.income/1000)+'K';
-  document.getElementById('m-quests').textContent=S.completedQuests.length;
-  document.getElementById('m-streak').textContent=S.bestStreak+'d';
-  document.getElementById('stats-card').innerHTML=Object.entries(S.stats).map(([k,v])=>`
-    <div class="stat-row">
-      <div class="stat-n">${k}</div>
-      <div class="stat-bg"><div class="stat-fill" style="width:${Math.min(v,100)}%;background:${SC[k]}"></div></div>
-      <div class="stat-v">${v}</div>
-    </div>`).join('');
-  renderWeekRow('home-week');
-  document.getElementById('home-boss-preview').innerHTML=BOSSES.slice(0,3).map(b=>{
-    const def=S.defeatedBosses.includes(b.id); const hp=S.bossHP[b.id]||0;
-    const col=def?'var(--text3)':hp>60?'#C0392B':hp>30?'#E67E22':'#2ECC71';
-    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;${def?'opacity:0.4':''}">
-      <span style="font-size:18px">${b.icon}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">${b.name}</div>
-        <div style="height:5px;background:var(--bg4);border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${hp}%;background:${col};border-radius:3px;transition:width 0.6s"></div>
-        </div>
-      </div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)">${def?'DEAD':hp+'%'}</span>
-    </div>`;
-  }).join('');
-}
+async function renderHome() {
+  const lvl = getLvl(S.xp);
+  document.getElementById('hero-emoji').textContent = lvl.e;
+  document.getElementById('lvl-big').textContent = lvl.n;
+  document.getElementById('lvl-name').textContent = lvl.t.toUpperCase();
+  document.getElementById('hero-name').textContent = (S.name || 'ADVENTURER').toUpperCase();
+  const goalInfo = Object.values(GOAL_OPTIONS).flat().find(o=>o.key===S.goalKey);
+  document.getElementById('hero-goal-label').textContent = goalInfo?.title || 'Building toward your goal';
 
-function renderWeekRow(id) {
-  const days=['S','M','T','W','T','F','S'], t=today(), now=new Date();
-  let html='';
-  for(let i=6;i>=0;i--){
-    const d=new Date(now); d.setDate(now.getDate()-i);
-    const k=d.toISOString().slice(0,10); const isT=k===t;
-    const cnt=S.weekLog[k]||(isT?Object.keys(S.habits[t]||{}).length:0);
-    let cls='wdc'; if(isT) cls+=' today'; else if(cnt>=4) cls+=' win'; else if(cnt>=2) cls+=' partial';
-    html+=`<div class="wd"><div class="${cls}">${cnt||'·'}</div><div class="wdl">${days[d.getDay()]}</div></div>`;
+  // XP progress
+  const pct = Math.round(((S.xp - lvl.min) / (lvl.max - lvl.min)) * 100);
+  document.getElementById('xp-fill-home').style.width = Math.min(Math.max(pct,0),100) + '%';
+  document.getElementById('xp-val-home').textContent = S.xp + ' / ' + lvl.max + ' XP';
+
+  // Goal progress
+  document.getElementById('goal-prog-fill').style.width = S.progressPct + '%';
+  document.getElementById('goal-prog-val').textContent = S.progressPct + '%';
+
+  // Mini stats
+  document.getElementById('m-quests').textContent = S.completedQuestIds.length;
+  document.getElementById('m-streak').textContent = S.streak + 'd';
+  document.getElementById('m-badges').textContent = S.earnedBadgeIds.length;
+  // Days remaining
+  if (S.startDate && S.timelineMonths) {
+    const start = new Date(S.startDate);
+    const end = new Date(start); end.setMonth(start.getMonth() + S.timelineMonths);
+    const daysLeft = Math.max(0, Math.ceil((end - new Date()) / 86400000));
+    document.getElementById('m-days').textContent = daysLeft;
   }
-  const el=document.getElementById(id); if(el) el.innerHTML=html;
-}
 
-function renderDaily() {
-  renderWeekRow('daily-week');
-  const t=today(), done=S.habits[t]||{};
-  document.getElementById('habits-container').innerHTML=HABITS.map(h=>{
-    const d=!!done[h.id], str=S.streaks[h.id]||0;
-    return `<div class="habit-item ${d?'done':''}" onclick="toggleHabit('${h.id}', this)">
-      <div class="hchk">${d?'✓':''}</div>
-      <div class="hbody">
-        <div class="hname">${h.icon} ${h.name}</div>
-        <div class="hmeta">${h.desc}</div>
-      </div>
-      <div class="hright">
-        <div class="hxp">+${h.xp} XP</div>
-        <div class="hstr ${str>=3?'hot':''}">${str>0?str+(str>=3?' 🔥':' day'+(str!==1?'s':'')):'start'}</div>
-      </div>
-    </div>`;
-  }).join('');
-  document.getElementById('habit-count-lbl').textContent=Object.keys(done).length+' / 5 done';
-}
+  // Today's quests preview
+  const todayQ = await loadTodayQuests();
+  const pendingQ = todayQ.filter(q => q.status !== 'completed').slice(0, 3);
+  document.getElementById('home-quests').innerHTML = pendingQ.length ?
+    pendingQ.map(q => renderQuestCard(q)).join('') :
+    '<div style="color:var(--green);font-size:13px;padding:0.75rem 0">✓ All quests done today! Come back tomorrow.</div>';
 
-function renderFinance() {
-  const {nw,assets,debts}=calcNW();
-  document.getElementById('fin-nw').textContent='$'+nw.toLocaleString();
-  document.getElementById('fin-summary').innerHTML=`
-    <div class="mini-c"><div class="mini-l">Assets</div><div class="mini-v" style="color:var(--green)">$${assets.toLocaleString()}</div></div>
-    <div class="mini-c"><div class="mini-l">Debt</div><div class="mini-v" style="color:var(--red)">$${debts.toLocaleString()}</div></div>`;
-  document.getElementById('assets-list').innerHTML=S.assets.length?
-    S.assets.map(a=>`<div class="asset-row">
-      <div class="asset-icon">${getAssetIcon(a.type)}</div>
-      <div class="asset-body"><div class="asset-name">${a.name}</div><div class="asset-type">${a.type}</div></div>
-      <div class="asset-val ${a.type==='debt'?'neg':'pos'}">${a.type==='debt'?'-':''}$${a.value.toLocaleString()}</div>
-      <button class="btn btn-sm" style="border-color:var(--text3);color:var(--text3);margin-left:6px;padding:6px 10px" onclick="removeAsset('${a.id}')">×</button>
-    </div>`).join(''):
-    '<div style="color:var(--text3);font-size:12px;padding:1rem 0;text-align:center">No assets logged yet.</div>';
-}
-
-function renderFocus() {
-  document.getElementById('focus-done').textContent=S.focusDone||0;
-  document.getElementById('focus-abandoned').textContent=S.focusAbandoned||0;
-  renderTimer();
-}
-
-let qbView='quests';
-function renderQB() {
-  const lvl=getLvl();
-  if (qbView==='quests') {
-    const types={side:'Side Quest',main:'Main Quest',life:'Life Quest'};
-    const bc={side:'qb-s',main:'qb-m',life:'qb-l'};
-    const active=QUESTS.filter(q=>!S.completedQuests.includes(q.id));
-    const done=QUESTS.filter(q=>S.completedQuests.includes(q.id));
-    let html=active.map(q=>`<div class="quest-item">
-      <span class="qbadge ${bc[q.type]}">${types[q.type]}</span>
-      <div class="qname">${q.name}</div>
-      <div class="qdesc">${q.desc}</div>
-      <div class="qreward">⚡ ${q.reward}</div>
-      <button class="btn btn-gold btn-sm btn-full" onclick="completeQuest('${q.id}')">Mark Complete</button>
-    </div>`).join('');
-    if (done.length) {
-      html+=`<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin:14px 0 8px">Completed (${done.length})</div>`;
-      html+=done.map(q=>`<div class="quest-item done"><span class="qbadge ${bc[q.type]}">${types[q.type]}</span><div class="qname">${q.name}</div><div style="font-size:11px;color:var(--green);font-weight:600">✓ Done</div></div>`).join('');
-    }
-    document.getElementById('qb-content').innerHTML=html||'<div style="color:var(--text3);font-size:12px;padding:1rem 0">All quests complete.</div>';
-  } else if (qbView==='bosses') {
-    document.getElementById('qb-content').innerHTML=BOSSES.map(b=>{
-      const def=S.defeatedBosses.includes(b.id);
-      const locked=b.unlockLvl&&lvl.n<b.unlockLvl;
-      const hp=S.bossHP[b.id]||0;
-      const tColors={'Mini Boss':'rgba(52,152,219,0.15)','Semi Boss':'rgba(155,89,182,0.15)','Hidden Boss':'rgba(26,188,156,0.15)','FINAL BOSS':'rgba(192,57,43,0.15)'};
-      const tText={'Mini Boss':'#5DADE2','Semi Boss':'#BB8FCE','Hidden Boss':'#48C9B0','FINAL BOSS':'#E74C3C'};
-      return `<div class="boss-item ${b.cls} ${def?'defeated':''}">
-        <div class="boss-hdr">
-          <div class="boss-icon">${b.icon}</div>
-          <div>
-            <span class="boss-type" style="background:${tColors[b.type]||'rgba(201,168,76,0.15)'};color:${tText[b.type]||'var(--gold)'}">${b.type}</span>
-            <div class="boss-name ${b.nameC}">${locked?'??? Hidden':b.name}</div>
-          </div>
-        </div>
-        ${locked?`<div style="font-size:11px;color:var(--text3)">Reach Level ${b.unlockLvl} to unlock.</div>`:`
-        <div class="boss-desc">${b.desc}</div>
-        <div style="font-size:10px;color:var(--text3);margin-bottom:8px">Defeat: ${b.defeat}</div>
-        <div class="hp-bg"><div class="hp-fill ${b.cls}" style="width:${hp}%"></div></div>
-        <div class="hp-meta"><span>${def?'💀 DEFEATED':hp+'% HP'}</span><span style="color:var(--gold)">${b.reward}</span></div>
-        ${!def?`<button class="btn btn-red btn-sm btn-full" style="margin-top:10px" onclick="defeatBoss('${b.id}')">Defeat Boss</button>`:''}`}
+  // Roadmap
+  const template = TEMPLATES[S.goalKey];
+  if (template) {
+    document.getElementById('home-roadmap').innerHTML = template.roadmap.map((step, i) => {
+      const done = i < Math.floor(S.progressPct / 20);
+      return `<div class="roadmap-step">
+        <div class="roadmap-num ${done?'done':''}">${done?'✓':(i+1)}</div>
+        <div class="roadmap-text" style="${done?'color:var(--text3);text-decoration:line-through':''}">${step}</div>
       </div>`;
     }).join('');
-  } else {
-    document.getElementById('qb-content').innerHTML=S.events.length?
-      S.events.map(e=>`<div class="event-item">
-        <div class="event-hdr">
-          <span class="event-icon">${e.icon}</span>
-          <span class="event-title">${e.title}</span>
-          <span class="event-time">${e.date}</span>
-        </div>
-        <div class="event-body">${e.body}</div>
-        ${e.xp?`<div class="event-xp">+${e.xp} XP</div>`:''}
-      </div>`).join(''):
-      '<div style="color:var(--text3);font-size:12px;padding:1rem 0;text-align:center">No events yet. Start logging habits.</div>';
   }
 }
 
-function updateDailyBadge() {
-  const t=today(), done=Object.keys(S.habits[t]||{}).length;
-  const badge=document.getElementById('daily-badge');
-  badge.style.display = done<HABITS.length ? 'flex' : 'none';
-}
-
-// ═══════════════════════════════════════
-// UI
-// ═══════════════════════════════════════
-const PAGE_TITLES={home:'⚔ HJ QUEST',daily:'📋 DAILY GRIND',focus:'⏱ FOCUS',finance:'💰 WEALTH',quests:'🗺 QUESTS',intel:'📡 INTELLIGENCE',track:'📊 TRACKER'};
-
-// ── SESSION TRACKING ──
-const SESSION = {
-  startTime: Date.now(),
-  tabTimes: {},
-  currentTab: 'home',
-  tabStart: Date.now(),
-  actions: [],
-};
-
-function trackTabSwitch(newTab) {
-  const elapsed = Math.floor((Date.now() - SESSION.tabStart) / 1000);
-  SESSION.tabTimes[SESSION.currentTab] = (SESSION.tabTimes[SESSION.currentTab] || 0) + elapsed;
-  SESSION.currentTab = newTab;
-  SESSION.tabStart = Date.now();
-}
-
-function trackAction(type, detail) {
-  SESSION.actions.push({ type, detail, time: new Date().toLocaleTimeString() });
-  logActivityToSupabase(type, detail);
-}
-
-async function logActivityToSupabase(actionType, actionDetail) {
-  try {
-    await fetch(`${SB_URL}/rest/v1/activity_log`, {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ action_type: actionType, action_detail: actionDetail, tab_visited: SESSION.currentTab })
-    });
-  } catch(e) {}
-}
-
-// ── GOALS ──
-const GOALS = [
-  { id: 'msse', label: 'MSSE degree progress' },
-  { id: 'liferpg', label: 'Work on LifeRPG' },
-  { id: 'invest', label: 'Research investments' },
-  { id: 'biz', label: 'Business research' },
-  { id: 'fitness', label: 'Physical health' },
-  { id: 'family', label: 'Quality family time' },
-  { id: 'reading', label: 'Reading / learning' },
-];
-
-let selectedMood = '';
-let selectedGoals = new Set();
-
-function selectMood(mood, btn) {
-  selectedMood = mood;
-  document.querySelectorAll('#mood-btns button').forEach(b => {
-    b.style.borderColor = 'var(--text3)'; b.style.color = 'var(--text3)'; b.style.background = 'transparent';
-  });
-  btn.style.borderColor = 'var(--gold)'; btn.style.color = 'var(--gold)'; btn.style.background = 'rgba(201,168,76,0.1)';
-}
-
-function renderGoalChecklist() {
-  document.getElementById('goal-checklist').innerHTML = GOALS.map(g => `
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleGoal('${g.id}',this)">
-      <div id="gcheck-${g.id}" style="width:20px;height:20px;border-radius:4px;border:1.5px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all 0.15s"></div>
-      <span style="font-size:13px;color:var(--text)">${g.label}</span>
-    </div>`).join('');
-}
-
-function toggleGoal(id, row) {
-  const check = document.getElementById('gcheck-' + id);
-  if (selectedGoals.has(id)) {
-    selectedGoals.delete(id);
-    check.style.background = 'transparent'; check.style.borderColor = 'var(--text3)'; check.textContent = '';
-  } else {
-    selectedGoals.add(id);
-    check.style.background = 'var(--green)'; check.style.borderColor = 'var(--green)'; check.textContent = '✓';
-  }
-}
-
-async function saveCheckin() {
-  const win = document.getElementById('win-input').value.trim();
-  const notes = document.getElementById('notes-input').value.trim();
-  if (!selectedMood) { showToast('Select a mood first'); return; }
-
-  const totalTime = Math.floor((Date.now() - SESSION.startTime) / 1000);
-
-  const payload = {
-    activity_date: new Date().toISOString().slice(0, 10),
-    tab_visited: Object.keys(SESSION.tabTimes).join(', '),
-    time_spent_seconds: totalTime,
-    action_type: 'daily_checkin',
-    action_detail: JSON.stringify({ goals: [...selectedGoals] }),
-    mood: selectedMood,
-    win_of_day: win,
-    notes: notes,
-  };
-
-  try {
-    const resp = await fetch(`${SB_URL}/rest/v1/activity_log`, {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(payload)
-    });
-
-    if (resp.ok || resp.status === 201) {
-      addXP(10); save();
-      showToast('✓ Check-in saved +10 XP');
-      document.getElementById('win-input').value = '';
-      document.getElementById('notes-input').value = '';
-      selectedMood = ''; selectedGoals = new Set();
-      document.querySelectorAll('#mood-btns button').forEach(b => { b.style.borderColor='var(--text3)'; b.style.color='var(--text3)'; b.style.background='transparent'; });
-      renderGoalChecklist();
-      await loadPastCheckins();
-      trackAction('checkin', `mood:${selectedMood}, win:${win}`);
-    } else {
-      showToast('Error saving — check Supabase');
-    }
-  } catch(e) {
-    showToast('Network error');
-  }
-}
-
-async function loadPastCheckins() {
-  try {
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/activity_log?action_type=eq.daily_checkin&order=created_at.desc&limit=7`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-    );
-    if (!resp.ok) return;
-    const logs = await resp.json();
-
-    if (!logs.length) {
-      document.getElementById('past-checkins').innerHTML = '<div style="color:var(--text3);font-size:12px;padding:0.5rem 0">No check-ins yet. Save your first one above.</div>';
-      return;
-    }
-
-    const moodEmoji = { great:'🔥', good:'✅', okay:'😐', tough:'💪' };
-
-    document.getElementById('past-checkins').innerHTML = logs.map(l => {
-      let goals = [];
-      try { goals = JSON.parse(l.action_detail || '{}').goals || []; } catch(e) {}
-      const mins = Math.floor((l.time_spent_seconds || 0) / 60);
-      return `<div style="padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <span style="font-size:16px">${moodEmoji[l.mood] || '📋'}</span>
-          <span style="font-size:12px;font-weight:600;color:var(--text)">${new Date(l.activity_date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>
-          <span style="font-size:10px;color:var(--text3);margin-left:auto">${mins > 0 ? mins + ' min in app' : ''}</span>
-        </div>
-        ${l.win_of_day ? `<div style="font-size:12px;color:var(--green);margin-bottom:4px">🏆 ${l.win_of_day}</div>` : ''}
-        ${l.notes ? `<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px">${l.notes}</div>` : ''}
-        ${goals.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${goals.map(g => `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(201,168,76,0.1);color:var(--gold)">${GOALS.find(x=>x.id===g)?.label||g}</span>`).join('')}</div>` : ''}
-      </div>`;
-    }).join('');
-  } catch(e) {}
-}
-
-async function loadActivityHeatmap() {
-  try {
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/activity_log?action_type=eq.daily_checkin&order=activity_date.desc&limit=30`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-    );
-    if (!resp.ok) return;
-    const logs = await resp.json();
-    const dateMap = {};
-    logs.forEach(l => { dateMap[l.activity_date] = l.mood; });
-
-    const moodColor = { great:'#2ECC71', good:'#27AE60', okay:'#C9A84C', tough:'#E67E22' };
-    const today = new Date();
-    let html = '';
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(today); d.setDate(today.getDate() - i);
-      const key = d.toISOString().slice(0, 10);
-      const mood = dateMap[key];
-      const color = moodColor[mood] || 'var(--bg4)';
-      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      html += `<div title="${label}${mood ? ' — '+mood : ''}" style="width:20px;height:20px;border-radius:3px;background:${color};border:1px solid var(--border)"></div>`;
-    }
-    document.getElementById('activity-heatmap').innerHTML = html;
-    document.getElementById('activity-heatmap').insertAdjacentHTML('afterend',
-      '<div style="font-size:10px;color:var(--text3);display:flex;gap:10px;margin-bottom:1rem"><span>🟢 Great/Good</span><span>🟡 Okay</span><span>🟠 Tough</span><span>⬛ No check-in</span></div>');
-  } catch(e) {}
-}
-
-function renderSessionStats() {
-  const totalSec = Math.floor((Date.now() - SESSION.startTime) / 1000);
-  const mins = Math.floor(totalSec / 60);
-  const secs = totalSec % 60;
-  const tabStats = Object.entries(SESSION.tabTimes)
-    .sort((a, b) => b[1] - a[1])
-    .map(([tab, sec]) => `${tab}: ${Math.floor(sec/60)}m ${sec%60}s`)
-    .join(' · ');
-
-  document.getElementById('session-stats').innerHTML = `
-    <div style="margin-bottom:6px">Session time: <span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${mins}m ${secs}s</span></div>
-    <div style="margin-bottom:6px">Tabs visited: <span style="color:var(--text)">${Object.keys(SESSION.tabTimes).join(', ') || SESSION.currentTab}</span></div>
-    <div style="margin-bottom:6px">Time per tab: <span style="color:var(--text2);font-size:11px">${tabStats || 'still counting...'}</span></div>
-    <div>Actions logged: <span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${SESSION.actions.length}</span></div>`;
-}
-
-function renderGoalsProgress() {
-  const total = Object.keys(S.habits).length;
-  const thisWeek = Object.values(S.weekLog).slice(-7).reduce((a,b)=>a+b,0);
-  document.getElementById('goals-progress').innerHTML = `
-    <div style="padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Current Character</div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Level</span><span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${getLvl().n} — ${getLvl().t}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Total XP</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.xp}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Quests completed</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.completedQuests.length} / ${QUESTS.length}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Habits this week</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${thisWeek}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Best streak</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.bestStreak} days</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)"><span>Net worth tracked</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">$${calcNW().nw.toLocaleString()}</span></div>
+function renderQuestCard(q) {
+  const done = q.status === 'completed';
+  const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'hard' ? 'diff-hard' : 'diff-medium';
+  return `<div class="quest-card ${done?'done':''}" onclick="${done?'':`completeQuestCard('${q.id}','${q.quest_title.replace(/'/g,"\\'")}',${q.xp_reward},this)`}">
+    <div class="quest-header">
+      <div class="quest-check">${done?'✓':''}</div>
+      <div class="quest-title">${q.quest_title}</div>
     </div>
-    ${GOALS.map(g => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--gold-dim);flex-shrink:0"></div>
-        <span style="font-size:13px;color:var(--text);flex:1">${g.label}</span>
-        <span style="font-size:10px;color:var(--text3)">tap in check-in</span>
-      </div>`).join('')}`;
+    <div class="quest-desc">${q.quest_description}</div>
+    <div class="quest-footer">
+      <span class="quest-xp">+${q.xp_reward} XP</span>
+      <span class="quest-diff ${diffClass}">${q.difficulty}</span>
+      ${q.resource_url ? `<a class="quest-url" href="${q.resource_url}" target="_blank" onclick="event.stopPropagation()">📎 Resource</a>` : ''}
+    </div>
+  </div>`;
 }
 
-// ── SUPABASE CONFIG ──
-const SB_URL = 'https://rcxuqpdlzrdzamrgwtjs.supabase.co';
-const SB_KEY = 'sb_publishable_UGydllMpryYrIsQnphtW3g_N4hW7AHZ';
+function completeQuestCard(id, title, xp, el) {
+  completeQuest(id, title, xp, el.closest('.quest-card'));
+}
 
-async function loadIntel() {
-  document.getElementById('intel-loading').style.display = 'block';
-  document.getElementById('intel-error').style.display = 'none';
-  document.getElementById('intel-content').style.display = 'none';
-
-  try {
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/briefs?order=created_at.desc&limit=1`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-    );
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    if (!data || data.length === 0) throw new Error('No briefs yet. Run the Python script first:\npython weekly_brief.py');
-
-    const brief = data[0];
-    const created = new Date(brief.created_at);
-    document.getElementById('intel-week').textContent = `Week ${brief.week_number} Brief`;
-    document.getElementById('intel-date').textContent = created.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'});
-
-    // Stocks
-    let stockHtml = '';
-    if (brief.stock_data) {
-      const stocks = typeof brief.stock_data === 'string' ? JSON.parse(brief.stock_data) : brief.stock_data;
-      stockHtml = Object.entries(stocks).map(([ticker, d]) => {
-        if (d.error) return '';
-        const up = d.change_pct >= 0;
-        const fromLow = d.pct_from_52w_low;
-        const signal = fromLow < 15 ? '🟢' : fromLow > 80 ? '🔴' : '🟡';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);font-weight:600">${ticker} ${signal}</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold)">$${d.price}</span>
-          <span style="font-size:11px;color:${up?'var(--green)':'var(--red)'}">${up?'▲':'▼'}${Math.abs(d.change_pct)}%</span>
-        </div>`;
-      }).join('');
-      stockHtml += `<div style="font-size:10px;color:var(--text3);margin-top:6px">🟢 near 52w low (buy zone) · 🟡 mid-range · 🔴 near 52w high</div>`;
-    }
-    document.getElementById('intel-stocks').innerHTML = stockHtml || '<div style="color:var(--text3);font-size:12px">No stock data</div>';
-
-    // AI analysis
-    const briefText = brief.brief_text || '';
-    const analysisMatch = briefText.match(/AI ANALYSIS\n([\s\S]*?)(?=\n={3}|\nINVESTMENT|\nTHIS WEEK)/);
-    document.getElementById('intel-analysis').textContent = analysisMatch ? analysisMatch[1].trim() : 'Add ANTHROPIC_API_KEY to get AI analysis.';
-
-    // Weekly content
-    document.getElementById('intel-article-title').textContent = brief.article_title || '';
-    const aUrl = document.getElementById('intel-article-url');
-    aUrl.textContent = brief.article_url || ''; aUrl.href = brief.article_url || '#';
-    document.getElementById('intel-recipe-name').textContent = brief.recipe_name || '';
-    const rUrl = document.getElementById('intel-recipe-url');
-    rUrl.textContent = brief.recipe_url || ''; rUrl.href = brief.recipe_url || '#';
-    document.getElementById('intel-hustle-task').textContent = brief.hustle_task || '';
-    const hUrl = document.getElementById('intel-hustle-url');
-    hUrl.textContent = brief.hustle_url || '(open HJ Quest and build)'; hUrl.href = brief.hustle_url || '#';
-
-    document.getElementById('intel-full').textContent = briefText;
-
-    // Load investment suggestions
-    await loadInvestmentSuggestions();
-    await loadInvestmentLog();
-
-    document.getElementById('intel-loading').style.display = 'none';
-    document.getElementById('intel-content').style.display = 'block';
-
-  } catch (err) {
-    document.getElementById('intel-loading').style.display = 'none';
-    document.getElementById('intel-error-msg').textContent = err.message;
-    document.getElementById('intel-error').style.display = 'block';
+async function renderQuestsPage(filter = 'today') {
+  let quests;
+  if (filter === 'today') {
+    quests = await loadTodayQuests();
+  } else if (filter === 'done') {
+    quests = await loadAllQuests();
+    quests = quests.filter(q => q.status === 'completed');
+  } else {
+    quests = await loadAllQuests();
   }
-}
 
-async function loadInvestmentSuggestions() {
-  try {
-    // Fetch latest week's suggestions from investment_log
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/investment_log?order=created_at.desc&limit=20`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-    );
-    if (!resp.ok) return;
-    const logs = await resp.json();
-    if (!logs || logs.length === 0) return;
-
-    // Split by term
-    const longTerm = logs.filter(l => l.term === 'long');
-    const shortTerm = logs.filter(l => l.term === 'short');
-
-    const renderSuggestion = (s) => `
-      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:700">${s.ticker}</span>
-          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(46,204,113,0.1);color:var(--green)">${s.action}</span>
-          ${s.amount ? `<span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)">$${s.amount}/mo</span>` : ''}
-        </div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.5">${s.notes || ''}</div>
-        ${s.price_at_time ? `<div style="font-size:10px;color:var(--text3);margin-top:3px">Price when suggested: $${s.price_at_time}</div>` : ''}
-      </div>`;
-
-    if (longTerm.length) document.getElementById('intel-longterm').innerHTML = longTerm.map(renderSuggestion).join('');
-    if (shortTerm.length) document.getElementById('intel-shortterm').innerHTML = shortTerm.map(renderSuggestion).join('');
-
-    // Extract budget breakdown from full brief text
-    const fullBrief = document.getElementById('intel-full').textContent;
-    const breakdownMatch = fullBrief.match(/HOW TO SPLIT[\s\S]*?\n([\s\S]*?)(?=\nWHAT TO AVOID|\n={3})/);
-    if (breakdownMatch) {
-      document.getElementById('intel-breakdown').innerHTML = `<pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);white-space:pre-wrap">${breakdownMatch[1].trim()}</pre>`;
-    }
-    const avoidMatch = fullBrief.match(/WHAT TO AVOID[\s\S]*?\n([\s\S]*?)(?=\nTHE BIGGER|\n={3})/);
-    if (avoidMatch) {
-      document.getElementById('intel-avoid').innerHTML = `<pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);white-space:pre-wrap">${avoidMatch[1].trim()}</pre>`;
-    }
-    const pathMatch = fullBrief.match(/THE BIGGER PICTURE\n([\s\S]*?)(?=\n={3}|\nTHIS WEEK)/);
-    if (pathMatch) document.getElementById('intel-path').textContent = pathMatch[1].trim();
-
-    document.getElementById('intel-invest-section').style.display = 'block';
-  } catch (e) {
-    console.log('Investment suggestions load error:', e);
+  if (!quests.length) {
+    document.getElementById('quests-container').innerHTML = `<div style="color:var(--text3);font-size:12px;padding:1rem 0;text-align:center">No quests yet. Complete your profile setup.</div>`;
+    return;
   }
+  document.getElementById('quests-container').innerHTML = quests.map(q => renderQuestCard(q)).join('');
 }
 
-async function loadInvestmentLog() {
-  try {
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/investment_log?order=created_at.desc&limit=10`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-    );
-    if (!resp.ok) return;
-    const logs = await resp.json();
+async function renderProgress() {
+  const template = TEMPLATES[S.goalKey];
+  if (!template) return;
 
-    const userLogs = logs.filter(l => l.term === 'user'); // user-logged actions
-    if (!userLogs.length) {
-      document.getElementById('intel-invest-log').innerHTML = `<div style="color:var(--text3);font-size:12px;padding:0.5rem 0">No investment decisions logged yet. Use the form above to track what you research and buy.</div>`;
-      return;
-    }
+  // Milestones
+  document.getElementById('milestones-list').innerHTML = template.milestones.map(m => {
+    const earned = S.earnedBadgeIds.includes(m.badge);
+    return `<div class="milestone-card ${earned?'unlocked':''}">
+      <div class="milestone-icon">${earned ? m.badge : '🔒'}</div>
+      <div class="milestone-body">
+        <div class="milestone-title">${m.title}</div>
+        <div class="milestone-xp">+${m.xp} XP</div>
+      </div>
+      ${earned ? '<span style="color:var(--green);font-size:12px;font-weight:700">✓</span>' : '<span class="milestone-locked">🔒</span>'}
+    </div>`;
+  }).join('');
 
-    document.getElementById('intel-invest-log').innerHTML = userLogs.map(l => `
-      <div style="padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:700">${l.ticker}</span>
-          <span style="font-size:11px;font-weight:600;color:var(--text2)">${l.action}</span>
-          <span style="font-size:10px;color:var(--text3)">${new Date(l.created_at).toLocaleDateString()}</span>
-        </div>
-        ${l.notes ? `<div style="font-size:12px;color:var(--text2)">${l.notes}</div>` : ''}
-        ${l.amount ? `<div style="font-size:11px;color:var(--green);margin-top:3px">$${l.amount} invested</div>` : ''}
-        ${l.price_at_time ? `<div style="font-size:10px;color:var(--text3)">at $${l.price_at_time}</div>` : ''}
-      </div>`).join('');
-  } catch (e) {
-    console.log('Investment log error:', e);
-  }
+  // Badges
+  const allBadges = template.milestones.map(m => ({ icon: m.badge, name: m.title, earned: S.earnedBadgeIds.includes(m.badge) }));
+  document.getElementById('badges-grid').innerHTML = allBadges.map(b => `
+    <div class="badge-item ${b.earned?'earned':'locked'}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+    </div>`).join('');
 }
 
-async function logInvestmentAction() {
-  const ticker = document.getElementById('inv-ticker').value.trim().toUpperCase();
-  const action = document.getElementById('inv-action').value;
-  const amount = parseFloat(document.getElementById('inv-amount').value) || 0;
-  const notes = document.getElementById('inv-notes').value.trim();
-
-  if (!ticker) { showToast('Enter a ticker symbol'); return; }
-
-  // Get current price from stocks if available
-  let price = 0;
-  try {
-    const resp = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`,
-      { headers: {'User-Agent': 'HJQuest/1.0'} });
-    if (resp.ok) {
-      const data = await resp.json();
-      price = data?.chart?.result?.[0]?.meta?.regularMarketPrice || 0;
-    }
-  } catch(e) {}
-
-  const payload = { ticker, action, price_at_time: round2(price), notes, amount, term: 'user' };
-
-  try {
-    const resp = await fetch(`${SB_URL}/rest/v1/investment_log`, {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(payload)
-    });
-    if (resp.ok || resp.status === 201) {
-      showToast(`✓ ${ticker} — ${action} logged`);
-      document.getElementById('inv-ticker').value = '';
-      document.getElementById('inv-amount').value = '';
-      document.getElementById('inv-notes').value = '';
-      addXP(15); save();
-      await loadInvestmentLog();
-    } else {
-      showToast('Error saving — check Supabase connection');
-    }
-  } catch(e) {
-    showToast('Network error — try again');
-  }
+function renderProfile() {
+  const lvl = getLvl(S.xp);
+  const goalInfo = Object.values(GOAL_OPTIONS).flat().find(o=>o.key===S.goalKey);
+  document.getElementById('profile-stats').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px"><span>Level</span><span style="color:var(--gold)">${lvl.n} — ${lvl.t}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px"><span>Total XP</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.xp}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px"><span>Quests completed</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.completedQuestIds.length}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px"><span>Badges earned</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.earnedBadgeIds.length}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2)"><span>Day streak</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${S.streak}</span></div>`;
+  document.getElementById('profile-goal').innerHTML = `
+    <div style="font-size:13px;color:var(--text2);margin-bottom:4px"><strong style="color:var(--gold)">Goal:</strong> ${goalInfo?.title || S.goalKey}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:4px">${S.goalDetail}</div>
+    <div style="font-size:11px;color:var(--text3)">Timeline: ${S.timelineMonths} months · Progress: ${S.progressPct}%</div>`;
 }
 
-function round2(n) { return Math.round(n * 100) / 100; }
+function updateQuestBadge() {
+  loadTodayQuests().then(q => {
+    const pending = q.filter(x=>x.status!=='completed').length;
+    const badge = document.getElementById('quest-badge');
+    badge.style.display = pending > 0 ? 'flex' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+const PAGE_TITLES = { home:'⚔ HOME', quests:'🗺 QUESTS', progress:'🏆 PROGRESS', community:'🌍 WINS', profile:'👤 PROFILE' };
+let questFilter = 'today';
 
 function switchPage(name, btn) {
-  trackTabSwitch(name);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
-  document.getElementById('page-title').textContent=PAGE_TITLES[name]||'HJ QUEST';
-  document.getElementById('scroll-area').scrollTop=0;
-  if (name === 'intel') loadIntel();
-  else if (name === 'track') {
-    renderGoalChecklist();
-    renderGoalsProgress();
-    renderSessionStats();
-    loadPastCheckins();
-    loadActivityHeatmap();
-  }
-  else renderAll();
+  if (btn) btn.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[name] || 'HJ QUEST';
+  document.getElementById('scroll-area').scrollTop = 0;
+  if (name==='quests') renderQuestsPage(questFilter);
+  else if (name==='progress') renderProgress();
+  else if (name==='community') loadCommunityFeed();
+  else if (name==='profile') renderProfile();
+  else renderHome();
 }
 
-document.getElementById('qfilter-bar').addEventListener('click', e=>{
-  const btn=e.target.closest('button'); if(!btn||!btn.dataset.f) return;
-  document.querySelectorAll('#qfilter-bar button').forEach(b=>{
+document.getElementById('quest-filter')?.addEventListener('click', e => {
+  const btn = e.target.closest('button'); if (!btn || !btn.dataset.f) return;
+  document.querySelectorAll('#quest-filter button').forEach(b => {
     b.style.borderColor='var(--text3)'; b.style.color='var(--text3)'; b.style.background='transparent';
     b.classList.remove('btn-gold');
   });
   btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)'; btn.style.background='rgba(201,168,76,0.08)';
-  qbView=btn.dataset.f;
-  renderQB();
+  questFilter = btn.dataset.f;
+  renderQuestsPage(questFilter);
 });
 
-function openModal(title,body,reward) {
-  const icons={'LEVEL UP! ⚡':'⚡','Quest Complete! ✅':'✅','PERFECT DAY ⚡':'🌟','Focus Block Complete! 🎯':'🎯','🏆 GAME COMPLETE':'👑'};
-  document.getElementById('m-icon').textContent=icons[title]||'⚔️';
-  document.getElementById('m-title').textContent=title;
-  document.getElementById('m-body').textContent=body;
-  document.getElementById('m-reward').textContent=reward;
+// ═══════════════════════════════════════
+// MODAL + TOAST
+// ═══════════════════════════════════════
+function openModal(title, body, reward) {
+  document.getElementById('m-icon').textContent = title.includes('LEVEL')?'⚡':title.includes('Badge')?'🏆':'⚔️';
+  document.getElementById('m-title').textContent = title;
+  document.getElementById('m-body').textContent = body;
+  document.getElementById('m-reward').textContent = reward;
   document.getElementById('modal').classList.add('open');
 }
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
-let toastT=null;
+let toastT = null;
 function showToast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  if(toastT) clearTimeout(toastT);
-  toastT=setTimeout(()=>t.classList.remove('show'),2500);
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  if (toastT) clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// PWA install
-let deferredInstall=null;
-window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredInstall=e; });
-function triggerInstall() {
-  if (deferredInstall) { deferredInstall.prompt(); deferredInstall=null; document.getElementById('install-banner').classList.add('hidden'); }
-  else { showToast('On iPhone: Share → Add to Home Screen'); }
+function resetOnboarding() {
+  if (!confirm('This will reset your goal. Your XP and progress will be cleared. Continue?')) return;
+  localStorage.removeItem(KEY);
+  location.reload();
 }
-// Hide banner if already installed
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  document.getElementById('install-banner').classList.add('hidden');
+
+// ═══════════════════════════════════════
+// TEMPLATE LOADER
+// ═══════════════════════════════════════
+async function loadTemplates() {
+  try {
+    const templates = await sbGet('goal_templates', '?select=goal_key,roadmap,milestones');
+    const quests = await sbGet('quest_templates', '?select=goal_key,title,description,xp_reward,difficulty,resource_url');
+
+    for (const t of (templates || [])) {
+      TEMPLATES[t.goal_key] = {
+        roadmap: typeof t.roadmap === 'string' ? JSON.parse(t.roadmap) : t.roadmap,
+        milestones: typeof t.milestones === 'string' ? JSON.parse(t.milestones) : t.milestones,
+        quests: [],
+      };
+    }
+    for (const q of (quests || [])) {
+      if (TEMPLATES[q.goal_key]) {
+        TEMPLATES[q.goal_key].quests.push({
+          title: q.title,
+          description: q.description,
+          xp: q.xp_reward,
+          difficulty: q.difficulty,
+          url: q.resource_url,
+        });
+      }
+    }
+  } catch(e) {
+    console.log('Template load error:', e);
+  }
 }
 
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
-load();
-renderAll();
-renderTimer();
-refreshNarrator();
+async function init() {
+  load();
+  await loadTemplates();
 
-if (!S.events.length) {
-  logEvent('⚔️','Character Created','Hyunjun Yoo — Senior Court Analyst II, Tallahassee FL. $61K. Homeowner. CS + MSSE. Building toward generational wealth. The journey begins.',null,'start');
-  save(); renderAll();
+  if (S.onboarded) {
+    document.getElementById('onboard').classList.add('hidden');
+    document.getElementById('main-app').style.display = 'flex';
+    // Check if daily quests need generating
+    const todayQ = await loadTodayQuests();
+    if (!todayQ.length) await generateDailyQuests();
+    renderAll();
+  } else {
+    document.getElementById('onboard').style.display = 'flex';
+  }
 }
 
-console.log(`%cHJ Quest loaded · LVL ${getLvl().n} ${getLvl().t}`, 'color:#C9A84C;font-family:serif');
+init();
 </script>
 </body>
 </html>
