@@ -368,7 +368,12 @@ body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-event
         </select>
       </div>
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Monthly income (optional, helps with financial goals)</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Anthropic API key <span style="color:var(--text3);font-weight:400">(optional — enables AI-personalized quests)</span></div>
+        <input class="ob-input" id="ob-api-key" type="password" placeholder="sk-ant-... (leave blank to use preset quests)">
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">Get your key at console.anthropic.com · Never stored on servers</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:0.04em">Monthly income (optional — helps personalize financial goals)</div>
         <input class="ob-input" id="ob-income" type="number" placeholder="e.g. 4000" oninput="checkStep4()">
       </div>
     </div>
@@ -719,11 +724,135 @@ function renderRoadmap() {
     `${firstQuest.title} (+${firstQuest.xp} XP)` : 'Your first quest is ready';
 }
 
+// ── AI FALLBACK — generates personalized roadmap when no template exists ──
+async function generateAIRoadmap(goalDetail, goalCategory, userName, income, timelineMonths) {
+  const apiKey = localStorage.getItem('hj_api_key') || '';
+  if (!apiKey) return null;
+
+  const prompt = `You are building a personalized life roadmap for ${userName}.
+
+GOAL: "${goalDetail}"
+CATEGORY: ${goalCategory}
+TIMELINE: ${timelineMonths} months
+MONTHLY INCOME: $${income || 'unknown'}
+
+Respond ONLY with this exact JSON format, no other text:
+
+{
+  "roadmap": [
+    "Step 1 — specific action",
+    "Step 2 — specific action",
+    "Step 3 — specific action",
+    "Step 4 — specific action",
+    "Step 5 — specific action"
+  ],
+  "quests": [
+    {"title": "Quest title", "description": "Specific action today — direct, no fluff.", "xp": 50, "difficulty": "easy", "url": ""},
+    {"title": "Quest title", "description": "Specific action.", "xp": 80, "difficulty": "medium", "url": ""},
+    {"title": "Quest title", "description": "Specific action.", "xp": 100, "difficulty": "medium", "url": ""},
+    {"title": "Quest title", "description": "Specific action.", "xp": 120, "difficulty": "hard", "url": ""},
+    {"title": "Quest title", "description": "Specific action.", "xp": 150, "difficulty": "hard", "url": ""}
+  ],
+  "milestones": [
+    {"title": "First milestone", "xp": 100, "badge": "🎯 First Step"},
+    {"title": "25% progress", "xp": 200, "badge": "⚡ Building"},
+    {"title": "Halfway there", "xp": 400, "badge": "🔥 Halfway"},
+    {"title": "Goal complete", "xp": 800, "badge": "🏆 Done"}
+  ]
+}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) throw new Error(`API ${resp.status}`);
+    const data = await resp.json();
+    const raw = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(raw);
+
+    // Cache in Supabase — never call API again for this user
+    const customKey = `custom_${S.deviceId}`;
+    await sbPost('goal_templates', {
+      goal_key: customKey,
+      category: goalCategory,
+      title: goalDetail,
+      icon: '🎯',
+      description: goalDetail,
+      roadmap: JSON.stringify(parsed.roadmap),
+      milestones: JSON.stringify(parsed.milestones),
+    });
+    for (const q of parsed.quests) {
+      await sbPost('quest_templates', {
+        goal_key: customKey,
+        category: goalCategory,
+        title: q.title,
+        description: q.description,
+        xp_reward: q.xp,
+        difficulty: q.difficulty,
+        resource_url: q.url || '',
+      });
+    }
+
+    TEMPLATES[customKey] = parsed;
+    S.goalKey = customKey;
+    save();
+    return parsed;
+  } catch (e) {
+    console.error('AI roadmap error:', e);
+    return null;
+  }
+}
+
+function getGenericTemplate(goalDetail) {
+  return {
+    roadmap: [
+      'Define your goal clearly and write it down',
+      'Research 3 people who achieved the same goal',
+      'Take your first small action today',
+      'Build a daily habit around your goal',
+      'Track your progress every week',
+    ],
+    quests: [
+      { title: 'Write your goal down', description: 'One sentence, specific and measurable. Put it somewhere you see every day.', xp: 30, difficulty: 'easy', url: '' },
+      { title: 'Research for 30 minutes', description: 'Find 3 people who achieved your exact goal. How did they do it?', xp: 60, difficulty: 'easy', url: '' },
+      { title: 'Take one action today', description: 'The smallest possible step toward your goal. Do it right now.', xp: 80, difficulty: 'medium', url: '' },
+      { title: 'Tell one person your goal', description: 'Accountability starts with saying it out loud to someone you trust.', xp: 70, difficulty: 'medium', url: '' },
+      { title: 'Set a 30-day checkpoint', description: 'What will you have done in 30 days? Write it down and commit.', xp: 100, difficulty: 'hard', url: '' },
+    ],
+    milestones: [
+      { title: 'First action taken', xp: 100, badge: '🎯 Started' },
+      { title: '7-day streak', xp: 200, badge: '🔥 Consistent' },
+      { title: '30-day streak', xp: 500, badge: '⚡ Committed' },
+      { title: 'Goal complete', xp: 1000, badge: '🏆 Done' },
+    ]
+  };
+}
+
 async function finishOnboarding() {
   const name = document.getElementById('ob-name').value.trim();
   const goalDetail = document.getElementById('ob-goal-detail').value.trim();
   const timeline = parseInt(document.getElementById('ob-timeline').value);
   const income = parseInt(document.getElementById('ob-income').value) || 0;
+  const apiKey = document.getElementById('ob-api-key').value.trim();
+  if (apiKey) localStorage.setItem('hj_api_key', apiKey);
+
+  // Loading state
+  const btn = document.querySelector('#ob-step-5 .ob-next');
+  const origText = btn.textContent;
+  btn.textContent = 'Building your roadmap...';
+  btn.disabled = true;
 
   S.onboarded = true;
   S.name = name;
@@ -735,20 +864,31 @@ async function finishOnboarding() {
   S.progressPct = 0;
   save();
 
+  // Check if template exists — if not, try AI, then generic fallback
+  const hasTemplate = TEMPLATES[obGoalKey]?.quests?.length > 0;
+  if (!hasTemplate) {
+    showToast('Generating your personalized roadmap...');
+    const aiResult = await generateAIRoadmap(goalDetail, obCat, name, income, timeline);
+    if (!aiResult) {
+      // Use generic fallback — store under goal key
+      TEMPLATES[obGoalKey] = getGenericTemplate(goalDetail);
+    }
+  }
+
   // Save user to Supabase
   await sbPost('app_users', {
     device_id: S.deviceId,
     name: S.name,
     goal_key: S.goalKey,
     goal_type: S.goalCategory,
-    goal_description: GOAL_OPTIONS[obCat]?.find(o=>o.key===obGoalKey)?.title || '',
+    goal_description: Object.values(GOAL_OPTIONS).flat().find(o=>o.key===obGoalKey)?.title || goalDetail,
     goal_detail: goalDetail,
     timeline_months: timeline,
     income: income,
     onboarded: true,
   });
 
-  // Generate first batch of daily quests from templates
+  // Generate first daily quests
   await generateDailyQuests();
 
   // Show main app
