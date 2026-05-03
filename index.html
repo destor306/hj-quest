@@ -737,14 +737,13 @@ function renderRoadmap() {
 async function startJourney() {
   const name = document.getElementById('ob-name').value.trim();
   const goalDetail = document.getElementById('ob-goal-detail').value.trim();
-  if (!name || !goalDetail) { alert('Please fill in your name and goal description.'); return; }
+  if (!name || !goalDetail) { alert('Please fill in your name and goal.'); return; }
 
-  // Update button immediately
   const btn = document.getElementById('ob-next-4');
-  btn.textContent = '⏳ Building your journey...';
+  btn.textContent = '⏳ Setting up...';
   btn.disabled = true;
 
-  // Save everything locally first — this cannot fail
+  // ── Step 1: Save locally (instant, cannot fail) ──
   ANTHROPIC_KEY = document.getElementById('ob-api-key')?.value.trim() || '';
   S.onboarded = true;
   S.name = name;
@@ -754,30 +753,71 @@ async function startJourney() {
   S.timelineMonths = parseInt(document.getElementById('ob-timeline').value) || 6;
   S.income = parseInt(document.getElementById('ob-income').value) || 0;
   S.progressPct = 0;
-  save();
+  save(); // localStorage only - instant
 
-  // Fire and forget — don't await, just try in background
-  sbPost('app_users', {
-    device_id: S.deviceId, name: S.name, goal_key: S.goalKey,
-    goal_type: S.goalCategory, goal_detail: S.goalDetail,
-    timeline_months: S.timelineMonths, income: S.income, onboarded: true,
-  }).catch(()=>{});
-
-  // Try quest generation with a hard 6-second timeout
-  try {
-    await Promise.race([
-      generateDailyQuests(),
-      new Promise(resolve => setTimeout(resolve, 6000)) // resolve (not reject) so we never throw
-    ]);
-  } catch(e) {
-    console.log('Quest gen error, using generic:', e);
+  // ── Step 2: Use template quests if available (instant, from memory) ──
+  const template = TEMPLATES[S.goalKey];
+  if (template && template.quests && template.quests.length > 0) {
+    // Store quests locally for immediate use
+    S.localQuests = template.quests.slice(0, 5).map(q => ({
+      id: 'lq_' + Math.random().toString(36).substr(2,9),
+      quest_title: q.title,
+      quest_description: q.description,
+      xp_reward: q.xp || 50,
+      difficulty: q.difficulty || 'medium',
+      resource_url: q.url || '',
+      status: 'pending',
+      quest_date: today(),
+    }));
+    save();
+  } else {
+    // No template — use generic quests immediately (no API call needed to show app)
+    S.localQuests = getGenericQuests();
+    save();
   }
 
-  // ALWAYS show the app — no matter what happened above
+  // ── Step 3: Show the app immediately ──
   document.getElementById('onboard').classList.add('hidden');
   document.getElementById('main-app').style.display = 'flex';
   renderAll();
-  showToast(`Welcome ${S.name}! Your journey begins. ⚔`);
+  showToast(`Welcome ${S.name}! ⚔`);
+
+  // ── Step 4: Background sync to Supabase (non-blocking, fire and forget) ──
+  setTimeout(() => {
+    syncToSupabase();
+  }, 2000); // wait 2 sec after app loads before trying network
+}
+
+function getGenericQuests() {
+  return [
+    { id:'gq1', quest_title:'Define your goal clearly', quest_description:'Write your goal in one sentence: I want to [outcome] by [date]. Put it somewhere visible.', xp_reward:30, difficulty:'easy', resource_url:'', status:'pending', quest_date:today() },
+    { id:'gq2', quest_title:'Research your first step', quest_description:'Spend 20 min finding what the most successful people in your situation did first.', xp_reward:40, difficulty:'easy', resource_url:'', status:'pending', quest_date:today() },
+    { id:'gq3', quest_title:'Tell one person your goal', quest_description:'Text or call one person today. Tell them your goal. Ask them to check in weekly.', xp_reward:50, difficulty:'medium', resource_url:'', status:'pending', quest_date:today() },
+    { id:'gq4', quest_title:'Take one small action today', quest_description:'The smallest possible step toward your goal. 15 minutes. Do it right now.', xp_reward:60, difficulty:'medium', resource_url:'', status:'pending', quest_date:today() },
+    { id:'gq5', quest_title:'Schedule 3 sessions this week', quest_description:'Block 30 min on your calendar for 3 days this week. Treat it like a meeting.', xp_reward:50, difficulty:'easy', resource_url:'', status:'pending', quest_date:today() },
+  ];
+}
+
+async function syncToSupabase() {
+  // Best-effort background sync — never blocks the UI
+  try {
+    await sbPost('app_users', {
+      device_id: S.deviceId, name: S.name, goal_key: S.goalKey,
+      goal_type: S.goalCategory, goal_detail: S.goalDetail,
+      timeline_months: S.timelineMonths, income: S.income, onboarded: true,
+    });
+    // Sync local quests to Supabase
+    for (const q of (S.localQuests || [])) {
+      await sbPost('user_daily_quests', {
+        device_id: S.deviceId, quest_date: q.quest_date,
+        quest_title: q.quest_title, quest_description: q.quest_description,
+        xp_reward: q.xp_reward, difficulty: q.difficulty,
+        resource_url: q.resource_url, status: q.status,
+      });
+    }
+  } catch(e) {
+    console.log('Background sync failed (offline?):', e);
+  }
 }
 
 async function finishOnboarding() { await startJourney(); }
@@ -920,10 +960,17 @@ async function generateGenericQuests() {
 }
 
 async function loadTodayQuests() {
-  const quests = await sbGet('user_daily_quests',
-    `?device_id=eq.${S.deviceId}&quest_date=eq.${today()}&order=created_at.asc`
-  );
-  return quests || [];
+  // Use local quests first (always available, instant)
+  if (S.localQuests && S.localQuests.length > 0) {
+    return S.localQuests.filter(q => q.quest_date === today());
+  }
+  // Fall back to Supabase
+  try {
+    const quests = await sbGet('user_daily_quests',
+      `?device_id=eq.${S.deviceId}&quest_date=eq.${today()}&order=created_at.asc`
+    );
+    return quests || [];
+  } catch(e) { return []; }
 }
 
 async function loadAllQuests() {
@@ -1149,7 +1196,47 @@ function renderQuestCard(q) {
 }
 
 function completeQuestCard(id, title, xp, el) {
-  completeQuest(id, title, xp, el.closest('.quest-card'));
+  // Update local state immediately
+  if (S.localQuests) {
+    const q = S.localQuests.find(q => q.id === id);
+    if (q) q.status = 'completed';
+    save();
+  }
+  S.completedQuestIds.push(title);
+  save();
+
+  const prevLvl = getLvl(S.xp).n;
+  S.xp += xp;
+  S.progressPct = Math.min(100, S.progressPct + 10);
+  save();
+
+  // XP flyup
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    const flyup = document.createElement('div');
+    flyup.className = 'xp-flyup';
+    flyup.textContent = `+${xp} XP`;
+    flyup.style.left = (rect.left + rect.width/2 - 30) + 'px';
+    flyup.style.top = (rect.top - 10) + 'px';
+    document.body.appendChild(flyup);
+    setTimeout(() => flyup.remove(), 1200);
+  }
+
+  showToast(`✓ ${title} — +${xp} XP`);
+
+  const newLvl = getLvl(S.xp).n;
+  if (newLvl > prevLvl) {
+    setTimeout(() => openModal('LEVEL UP! ⚡', `You reached Level ${newLvl} — ${getLvl(S.xp).t}.`, `${getLvl(S.xp).e} ${getLvl(S.xp).t}`), 500);
+  }
+
+  // Background sync to Supabase
+  if (id && !id.startsWith('lq_') && !id.startsWith('gq')) {
+    sbPatch('user_daily_quests', `?id=eq.${id}`, { status:'completed', completed_at: new Date().toISOString() }).catch(()=>{});
+  }
+  sbPatch('app_users', `?device_id=eq.${S.deviceId}`, { total_xp: S.xp, current_level: getLvl(S.xp).n, progress_percentage: S.progressPct }).catch(()=>{});
+
+  checkMilestones();
+  renderAll();
 }
 
 async function renderQuestsPage(filter = 'today') {
